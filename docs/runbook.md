@@ -61,9 +61,11 @@ The corpus is refreshed automatically **every day at 10:00 AM IST** (04:30 UTC) 
 
 1. Open the repo on GitHub → **Actions**
 2. Select **Daily corpus ingest**
-3. Click **Run workflow**
+3. Click **Run workflow** (not "Re-run jobs" on an old run — that reuses the old workflow file)
 4. Optionally enter a `scheme_id` to refresh one scheme only
 5. Click **Run workflow**
+
+In the job log you should see `commit_corpus_refresh.sh v3` at the start of the commit step.
 
 ### Failure handling
 

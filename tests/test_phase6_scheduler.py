@@ -39,9 +39,10 @@ def test_daily_ingest_workflow_runs_full_pipeline() -> None:
 
 def test_daily_ingest_workflow_rebases_before_push() -> None:
     text = WORKFLOW_PATH.read_text(encoding="utf-8")
-    assert "sync_to_origin_main" in text
-    assert "push_with_retry" in text
-    assert "git push origin main" in text
+    assert "scripts/commit_corpus_refresh.sh" in text
+    script = (REPO_ROOT / "scripts" / "commit_corpus_refresh.sh").read_text(encoding="utf-8")
+    assert "CORPUS_COMMIT_SCRIPT_VERSION=3" in script
+    assert "Corpus push attempt" in script
 
 
 def test_vectorstore_not_gitignored() -> None:

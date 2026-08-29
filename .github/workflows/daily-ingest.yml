@@ -1,6 +1,8 @@
 # Phase 6 — Daily corpus refresh (fetch → parse → chunk → embed → Chroma upsert).
 # Schedule: 10:00 AM IST (04:30 UTC) every day.
 # Manual: Actions → Daily corpus ingest → Run workflow (optional scheme_id).
+#
+# IMPORTANT: Use "Run workflow" (not "Re-run jobs" on an old run) to pick up workflow fixes.
 
 name: Daily corpus ingest
 
@@ -60,6 +62,7 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
           PYTHONFAULTHANDLER: "1"
+          GITHUB_ACTIONS: "true"
           TQDM_DISABLE: "1"
           EMBEDDING_MODEL: BAAI/bge-small-en-v1.5
           VECTOR_STORE_PATH: data/vectorstore
@@ -78,86 +81,27 @@ jobs:
           TRANSFORMERS_VERBOSITY: error
         run: |
           set -euo pipefail
+          echo "=== INGEST PIPELINE START | sha=$(git rev-parse --short HEAD) | $(date -u -Iseconds) ==="
           ARGS=(--fetch-fallback-cached)
           if [ -n "${{ inputs.scheme_id }}" ]; then
             ARGS+=(--scheme-id "${{ inputs.scheme_id }}")
           fi
-          python -u -m src.ingest.run "${ARGS[@]}"
+          stdbuf -oL -eL python -u -m src.ingest.run "${ARGS[@]}"
+          echo "=== INGEST PIPELINE END | exit=$? ==="
 
       - name: Run retrieval smoke probes
         env:
           PYTHONUNBUFFERED: "1"
+          GITHUB_ACTIONS: "true"
           LOG_LEVEL: INFO
           EMBEDDING_MODEL: BAAI/bge-small-en-v1.5
           VECTOR_STORE_PATH: data/vectorstore
           CHROMA_COLLECTION: mutual_fund_chunks
-        run: python -u scripts/retrieval_probe.py
+        run: |
+          echo "=== RETRIEVAL PROBES START | $(date -u -Iseconds) ==="
+          stdbuf -oL -eL python -u scripts/retrieval_probe.py
 
       - name: Commit refreshed corpus
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          sync_to_origin_main() {
-            git fetch origin main
-            # Re-attach to latest main while keeping ingest edits in the working tree.
-            git checkout -B main origin/main
-          }
-
-          commit_corpus_if_changed() {
-            git add data/raw data/processed data/vectorstore
-            if git diff --staged --quiet; then
-              echo "No corpus changes to commit."
-              return 1
-            fi
-            git commit -m "chore(ingest): daily corpus refresh $(date -u +%Y-%m-%d)"
-            return 0
-          }
-
-          push_with_retry() {
-            local attempt
-            for attempt in 1 2 3 4 5 6 7 8 9 10; do
-              echo "Push attempt ${attempt}/10: syncing with origin/main..."
-              git fetch origin main
-
-              if ! git rebase origin/main; then
-                echo "Rebase conflict on data/ — rebuilding corpus commit on latest main."
-                git rebase --abort || true
-                sync_to_origin_main
-                if ! commit_corpus_if_changed; then
-                  echo "Remote already has equivalent corpus state after sync."
-                  return 0
-                fi
-              fi
-
-              if git push origin main; then
-                echo "Corpus push succeeded on attempt ${attempt}."
-                return 0
-              fi
-
-              echo "Push rejected; retrying after sync..."
-              sync_to_origin_main
-              if ! commit_corpus_if_changed; then
-                echo "No diff after sync — treating as idempotent success."
-                return 0
-              fi
-              sleep $((attempt * 2))
-            done
-            return 1
-          }
-
-          # Start from latest main, then layer today's ingest artifacts on top.
-          sync_to_origin_main
-          if ! commit_corpus_if_changed; then
-            exit 0
-          fi
-
-          if push_with_retry; then
-            exit 0
-          fi
-
-          echo "Failed to push corpus commit after 10 attempts."
-          exit 1
+        run: bash scripts/commit_corpus_refresh.sh

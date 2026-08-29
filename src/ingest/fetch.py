@@ -22,7 +22,7 @@ import yaml
 
 from src.config import REPO_ROOT, get_settings
 from src.guardrails.citations import is_allowed_citation
-from src.logging_config import get_logger, log_checkpoint, log_manifest_roster, setup_logging
+from src.logging_config import get_logger, log_checkpoint, log_manifest_roster, pipeline_echo, setup_logging
 
 logger = get_logger(__name__)
 
@@ -526,19 +526,22 @@ def _log_scheme_result(step: str, result: SchemeFetchResult) -> None:
         hash_note = "changed" if result.hash_changed else "unchanged"
         if result.hash_changed is None:
             hash_note = "n/a"
-        logger.info(
-            "%s %s OK | mode=%s | http=%s | bytes=%s | hash=%s",
-            step,
-            result.scheme_id,
-            result.fetch_mode or "n/a",
-            result.http_status if result.http_status is not None else "n/a",
-            result.content_bytes if result.content_bytes is not None else "n/a",
-            hash_note,
+        line = (
+            f"{step} {result.scheme_id} OK | mode={result.fetch_mode or 'n/a'} | "
+            f"http={result.http_status if result.http_status is not None else 'n/a'} | "
+            f"bytes={result.content_bytes if result.content_bytes is not None else 'n/a'} | "
+            f"hash={hash_note}"
         )
+        logger.info(line)
+        pipeline_echo(line)
         if result.warning:
-            logger.warning("%s %s | %s", step, result.scheme_id, result.warning)
+            warn = f"{step} {result.scheme_id} | {result.warning}"
+            logger.warning(warn)
+            pipeline_echo(f"WARNING | {warn}")
     else:
-        logger.error("%s %s FAILED | %s", step, result.scheme_id, result.error)
+        line = f"{step} {result.scheme_id} FAILED | {result.error}"
+        logger.error(line)
+        pipeline_echo(f"ERROR | {line}")
 
 
 def _log_fetch_summary(summary: FetchRunSummary) -> None:

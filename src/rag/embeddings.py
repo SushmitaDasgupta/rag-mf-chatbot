@@ -2,6 +2,14 @@
 
 from __future__ import annotations
 
+import os
+
+# Suppress HuggingFace / tqdm progress bars before heavy imports (critical in CI logs).
+os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")
+os.environ.setdefault("TQDM_DISABLE", "1")
+os.environ.setdefault("TRANSFORMERS_VERBOSITY", "error")
+os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+
 from typing import Any
 
 import numpy as np
@@ -10,12 +18,21 @@ from sentence_transformers import SentenceTransformer
 
 from src.logging_config import get_logger, log_checkpoint
 
+try:
+    from transformers.utils.logging import disable_progress_bar
+
+    disable_progress_bar()
+except Exception:  # noqa: BLE001
+    pass
+
 logger = get_logger(__name__)
 
 DEFAULT_EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"
 
 BGE_QUERY_PREFIX = "Represent this sentence for searching relevant passages: "
 BGE_DOCUMENT_PREFIX = "Represent this document for retrieval: "
+
+_EMBEDDING_FUNCTIONS: dict[str, "SentenceTransformerEmbedding"] = {}
 
 
 def is_bge_model(model_name: str) -> bool:
@@ -78,11 +95,17 @@ class SentenceTransformerEmbedding(EmbeddingFunction[Documents]):
 
     @staticmethod
     def build_from_config(config: dict[str, Any]) -> "SentenceTransformerEmbedding":
-        return SentenceTransformerEmbedding(model_name=config["model_name"])
+        return get_embedding_function(str(config["model_name"]))
 
     def get_config(self) -> dict[str, Any]:
         return {"model_name": self._model_name}
 
 
 def get_embedding_function(model_name: str) -> SentenceTransformerEmbedding:
-    return SentenceTransformerEmbedding(model_name=model_name)
+    """Return a cached embedding function (Chroma may call build_from_config repeatedly)."""
+    cached = _EMBEDDING_FUNCTIONS.get(model_name)
+    if cached is not None:
+        return cached
+    cached = SentenceTransformerEmbedding(model_name=model_name)
+    _EMBEDDING_FUNCTIONS[model_name] = cached
+    return cached

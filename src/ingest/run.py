@@ -9,6 +9,13 @@ Usage:
 
 from __future__ import annotations
 
+import os
+
+# Configure logging before ingest imports so CI sees every checkpoint immediately.
+from src.logging_config import setup_logging
+
+setup_logging(os.environ.get("LOG_LEVEL", "INFO"))
+
 import argparse
 import sys
 import time

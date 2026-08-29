@@ -57,6 +57,9 @@ jobs:
 
       - name: Run ingest pipeline
         env:
+          PYTHONUNBUFFERED: "1"
+          PYTHONFAULTHANDLER: "1"
+          TQDM_DISABLE: "1"
           EMBEDDING_MODEL: BAAI/bge-small-en-v1.5
           VECTOR_STORE_PATH: data/vectorstore
           CHROMA_COLLECTION: mutual_fund_chunks
@@ -78,14 +81,16 @@ jobs:
           if [ -n "${{ inputs.scheme_id }}" ]; then
             ARGS+=(--scheme-id "${{ inputs.scheme_id }}")
           fi
-          python -m src.ingest.run "${ARGS[@]}"
+          python -u -m src.ingest.run "${ARGS[@]}"
 
       - name: Run retrieval smoke probes
         env:
+          PYTHONUNBUFFERED: "1"
+          LOG_LEVEL: INFO
           EMBEDDING_MODEL: BAAI/bge-small-en-v1.5
           VECTOR_STORE_PATH: data/vectorstore
           CHROMA_COLLECTION: mutual_fund_chunks
-        run: python scripts/retrieval_probe.py
+        run: python -u scripts/retrieval_probe.py
 
       - name: Commit refreshed corpus
         run: |

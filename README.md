@@ -146,6 +146,21 @@ The UI handles API rate limits (429 cooldown) client-side; Groq quota is enforce
 
 Phase 2 modules: `src/rag/{scheme_resolver,intent,retrieve,generate,validate,chat}.py`
 
+## Deployment
+
+Phase-wise production deploy (backend first, then frontend): [`docs/deployment.md`](docs/deployment.md)
+
+| Phase | Platform | Quick start |
+| --- | --- | --- |
+| **Phase 1** — Backend API | Railway | Connect repo → set `GROQ_API_KEY` + `CORS_ORIGINS` from [`railway.env.example`](railway.env.example) → deploy |
+| **Phase 2** — Frontend UI | Vercel | Set `VITE_API_BASE_URL` to Railway URL → deploy `ui/` |
+
+Verify Phase 1 after deploy:
+
+```bash
+bash scripts/verify_phase1_backend.sh https://YOUR-RAILWAY-URL.up.railway.app
+```
+
 ## Repo layout
 
 ```text

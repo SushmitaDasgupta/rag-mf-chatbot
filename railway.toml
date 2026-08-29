@@ -1,0 +1,21 @@
+# Railway Phase 1 — backend API (see docs/deployment.md)
+[build]
+builder = "nixpacks"
+
+[build.env]
+NIXPACKS_PYTHON_VERSION = "3.11"
+
+[deploy]
+startCommand = "bash scripts/start_api.sh"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+
+[deploy.env]
+LOG_LEVEL = "INFO"
+HF_HUB_DISABLE_PROGRESS_BARS = "1"
+TRANSFORMERS_VERBOSITY = "error"
+EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"
+VECTOR_STORE_PATH = "data/vectorstore"
+CHROMA_COLLECTION = "mutual_fund_chunks"
+MANIFEST_PATH = "data/manifest.yaml"

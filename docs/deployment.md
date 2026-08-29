@@ -1,6 +1,6 @@
 # Deployment guide
 
-Deploy the **Mutual Fund FAQ Assistant** as a split stack:
+Deploy the **Mutual Fund FAQ Assistant** in two phases: **backend first**, then **frontend**. Complete each phase in order before moving to the next.
 
 | Layer | Platform | Code path | Purpose |
 | --- | --- | --- | --- |
@@ -13,16 +13,27 @@ Related docs: [`runbook.md`](./runbook.md) (corpus refresh), [`implementation.md
 
 ---
 
+## Deployment phases overview
+
+| Phase | Name | Platform | Primary outcome | Depends on |
+| --- | --- | --- | --- | --- |
+| **Phase 1** | Backend API | Railway | `GET /api/health` returns `ok` with vectors loaded | GitHub repo, Groq API key |
+| **Phase 2** | Frontend UI | Vercel | Chat UI loads and calls Railway API | Phase 1 public URL |
+
+**Rule:** Do not start Phase 2 until Phase 1 is verified. The frontend needs the Railway URL at build time (`VITE_API_BASE_URL`).
+
+---
+
 ## Architecture (production)
 
 ```text
 User browser
     │
     ▼
-Vercel (static React UI)
+Vercel (static React UI)          ← Phase 2
     │  VITE_API_BASE_URL
     ▼
-Railway (FastAPI)
+Railway (FastAPI)                 ← Phase 1
     ├─ Chroma vector store  (data/vectorstore — baked into deploy)
     ├─ sentence-transformers (BAAI/bge-small-en-v1.5 — downloaded at runtime)
     └─ Groq API               (GROQ_API_KEY — secret on Railway)
@@ -35,39 +46,50 @@ The UI calls the API directly from the browser. Vite’s dev proxy (`/api` → `
 
 ---
 
-## Prerequisites
+## Prerequisites (before Phase 1)
 
-- GitHub repo connected to both Railway and Vercel
+- GitHub repo connected to Railway and Vercel
 - [Groq API key](https://console.groq.com/) for factual answer generation
 - Railway account (Hobby or Pro — embedding model needs **≥ 2 GB RAM** recommended)
 - Vercel account
 
-**Deploy order:** Railway (backend) first → note the public API URL → Vercel (frontend) with that URL.
-
 ---
 
-## 1. Backend — Railway
+## Phase 1 — Backend (Railway)
 
-### 1.1 Create the service
+**Goal:** A publicly reachable FastAPI service with Chroma loaded, Groq configured, and a passing health check.
+
+### Phase 1.1 — Create the service
 
 1. Open [Railway](https://railway.app) → **New Project** → **Deploy from GitHub repo**
 2. Select `SushmitaDasgupta/rag-mf-chatbot`
 3. **Root directory:** `/` (repo root — not `ui/`)
 4. Railway auto-detects Python via `requirements.txt`
 
-### 1.2 Start command
+**Exit criteria:** Service builds without error (dependencies install).
 
-Railway injects a `PORT` variable. Use it in the start command:
+### Phase 1.2 — Start command
+
+Railway injects a `PORT` variable. The repo includes a production start script and config:
+
+| File | Purpose |
+| --- | --- |
+| `scripts/start_api.sh` | Starts uvicorn on `$PORT` (default 8000 locally) |
+| `Procfile` | `web: bash scripts/start_api.sh` |
+| `railway.toml` | Start command, health check, Python 3.11, default env |
+
+You do **not** need to set the start command manually in Railway if `railway.toml` / `Procfile` are detected.
 
 ```bash
-uvicorn src.api.main:app --host 0.0.0.0 --port $PORT
+bash scripts/start_api.sh
+# equivalent to: uvicorn src.api.main:app --host 0.0.0.0 --port $PORT
 ```
 
-Set this under **Settings → Deploy → Start Command** (or add a `Procfile` at repo root — see [Optional config files](#optional-config-files)).
+**Exit criteria:** Deploy logs show `=== API START | host=0.0.0.0 port=...`.
 
-### 1.3 Environment variables (Railway)
+### Phase 1.3 — Environment variables
 
-Add these in **Variables** (never commit secrets):
+Add these in **Variables** (never commit secrets). Copy from [`railway.env.example`](../railway.env.example) as a template:
 
 | Variable | Required | Example / notes |
 | --- | --- | --- |
@@ -80,7 +102,7 @@ Add these in **Variables** (never commit secrets):
 | `MANIFEST_PATH` | No | `data/manifest.yaml` |
 | `API_HOST` | No | `0.0.0.0` (uvicorn flag overrides) |
 
-**CORS:** After Vercel deploys, set `CORS_ORIGINS` to your production Vercel URL. For preview deployments, either list each preview origin or use a single production origin only.
+> **CORS note:** If you have not deployed Vercel yet, set a placeholder origin (e.g. `http://localhost:5173`) for now. Update `CORS_ORIGINS` with your real Vercel URL after Phase 2.
 
 Example:
 
@@ -91,7 +113,9 @@ EMBEDDING_MODEL=BAAI/bge-small-en-v1.5
 VECTOR_STORE_PATH=data/vectorstore
 ```
 
-### 1.4 Resources & build
+**Exit criteria:** All required variables set in Railway dashboard.
+
+### Phase 1.4 — Resources & health check
 
 | Setting | Recommendation |
 | --- | --- |
@@ -103,11 +127,19 @@ VECTOR_STORE_PATH=data/vectorstore
 
 **Corpus data:** `data/vectorstore/` and processed corpus files are committed to the repo and ship with each Railway deploy. Daily updates from [GitHub Actions](../.github/workflows/daily-ingest.yml) land on `main`; redeploy Railway (or enable deploy-on-push) to pick up fresh data.
 
-### 1.5 Public URL
+**Exit criteria:** Health check path configured; memory ≥ 2 GB.
+
+### Phase 1.5 — Public URL & verification
 
 1. **Settings → Networking → Generate Domain**
 2. Note the URL, e.g. `https://rag-mf-api-production.up.railway.app`
-3. Verify:
+3. Verify with the included script (or `curl`):
+
+```bash
+bash scripts/verify_phase1_backend.sh https://YOUR-RAILWAY-URL.up.railway.app
+```
+
+Or manually:
 
 ```bash
 curl https://YOUR-RAILWAY-URL.up.railway.app/api/health
@@ -115,11 +147,17 @@ curl https://YOUR-RAILWAY-URL.up.railway.app/api/health
 
 Expected: JSON with `"status": "ok"`, `"vector_count" > 0`, `"groq_configured": true`.
 
+**Phase 1 complete when:** Health endpoint returns success with vectors loaded and Groq configured. Save the Railway URL — you need it for Phase 2.
+
 ---
 
-## 2. Frontend — Vercel
+## Phase 2 — Frontend (Vercel)
 
-### 2.1 Create the project
+**Goal:** A production chat UI that calls the Phase 1 Railway API (not `localhost`).
+
+**Depends on:** Phase 1 public URL.
+
+### Phase 2.1 — Create the project
 
 1. Open [Vercel](https://vercel.com) → **Add New → Project**
 2. Import `SushmitaDasgupta/rag-mf-chatbot`
@@ -133,17 +171,21 @@ Expected: JSON with `"status": "ok"`, `"vector_count" > 0`, `"groq_configured": 
 | **Output Directory** | `dist` |
 | **Install Command** | `npm install` |
 
-### 2.2 Environment variables (Vercel)
+**Exit criteria:** Vercel project linked to repo with `ui/` as root.
+
+### Phase 2.2 — Environment variables
 
 | Variable | Required | Value |
 | --- | --- | --- |
-| `VITE_API_BASE_URL` | **Yes** | Railway public URL **without** trailing slash, e.g. `https://rag-mf-api-production.up.railway.app` |
+| `VITE_API_BASE_URL` | **Yes** | Railway public URL from Phase 1.5 **without** trailing slash, e.g. `https://rag-mf-api-production.up.railway.app` |
 
 Set for **Production** (and Preview if you want preview deployments to hit the same API).
 
 > Vite embeds `VITE_*` variables at **build time**. Changing the API URL requires a **redeploy**.
 
-### 2.3 SPA routing (optional `vercel.json`)
+**Exit criteria:** `VITE_API_BASE_URL` set to your Railway URL before first build.
+
+### Phase 2.3 — SPA routing (optional `vercel.json`)
 
 If client-side routes are added later, place this in `ui/vercel.json`:
 
@@ -155,7 +197,7 @@ If client-side routes are added later, place this in `ui/vercel.json`:
 
 The current single-page app works without this for `/` only.
 
-### 2.4 Deploy & verify
+### Phase 2.4 — Deploy & verify
 
 1. Deploy the project
 2. Open the Vercel URL
@@ -164,11 +206,13 @@ The current single-page app works without this for `/` only.
 
 **Browser devtools:** Network tab should show `POST` to `https://YOUR-RAILWAY-URL/api/chat` (not `localhost`).
 
+**Phase 2 complete when:** UI loads and chat requests reach Railway successfully.
+
 ---
 
-## 3. Wire backend ↔ frontend
+## After deployment — Wire backend ↔ frontend
 
-After both are live:
+Run this once both phases are live:
 
 1. Copy Vercel production URL → Railway `CORS_ORIGINS`
 2. Redeploy Railway (or restart) so CORS picks up the new origin
@@ -180,22 +224,25 @@ Vercel UI  ──POST /api/chat──▶  Railway API
               └── CORS_ORIGINS must include Vercel origin
 ```
 
+For preview deployments, either list each preview origin in `CORS_ORIGINS` or use production origin only.
+
 ---
 
-## 4. Post-deploy checklist
+## Post-deploy checklist
 
 | Check | Command / action |
 | --- | --- |
-| API health | `curl https://<railway>/api/health` |
-| Groq configured | `"groq_configured": true` in health response |
-| Vectors loaded | `"vector_count" > 0` |
-| CORS | Chat from Vercel UI succeeds (no browser CORS error) |
-| Refusal path | Ask “Should I invest in Kotak Large Cap?” → refusal + edu link |
-| Rate limit UX | UI shows cooldown on 429 (client-side) |
+| Phase 1 — API health | `curl https://<railway>/api/health` |
+| Phase 1 — Groq configured | `"groq_configured": true` in health response |
+| Phase 1 — Vectors loaded | `"vector_count" > 0` |
+| Phase 2 — API URL in UI | Network tab shows Railway host, not `localhost` |
+| End-to-end — CORS | Chat from Vercel UI succeeds (no browser CORS error) |
+| End-to-end — Refusal path | Ask “Should I invest in Kotak Large Cap?” → refusal + edu link |
+| End-to-end — Rate limit UX | UI shows cooldown on 429 (client-side) |
 
 ---
 
-## 5. Corpus freshness in production
+## Corpus freshness in production
 
 | Mechanism | What it does |
 | --- | --- |
@@ -212,7 +259,7 @@ See [`runbook.md`](./runbook.md) for ingest failure handling.
 
 ---
 
-## 6. Secrets & security
+## Secrets & security
 
 - **Never** commit `GROQ_API_KEY` — Railway Variables only
 - **Never** expose `GROQ_API_KEY` in Vercel (frontend only needs `VITE_API_BASE_URL`)
@@ -221,29 +268,34 @@ See [`runbook.md`](./runbook.md) for ingest failure handling.
 
 ---
 
-## 7. Troubleshooting
+## Troubleshooting
 
 | Symptom | Likely cause | Fix |
 | --- | --- | --- |
-| `503 GROQ_API_KEY is not configured` | Missing secret on Railway | Set `GROQ_API_KEY` and redeploy |
+| `503 GROQ_API_KEY is not configured` | Missing secret on Railway | Set `GROQ_API_KEY` and redeploy (Phase 1.3) |
 | CORS error in browser | `CORS_ORIGINS` mismatch | Add exact Vercel URL to Railway `CORS_ORIGINS` |
 | `vector_count: 0` / degraded health | Chroma path wrong or empty deploy | Confirm `VECTOR_STORE_PATH=data/vectorstore` and `data/vectorstore/` exists in repo |
-| Chat hits `localhost` | `VITE_API_BASE_URL` unset at build | Set on Vercel, redeploy UI |
-| OOM / crash on Railway | Insufficient memory | Increase service memory to ≥ 2 GB |
+| Chat hits `localhost` | `VITE_API_BASE_URL` unset at build | Set on Vercel (Phase 2.2), redeploy UI |
+| OOM / crash on Railway | Insufficient memory | Increase service memory to ≥ 2 GB (Phase 1.4) |
 | Slow first answer | Embedding model cold download | Normal; consider keeping service warm or accepting cold start |
 | 429 from API | Groq rate limit | Wait for `Retry-After`; UI enforces client cooldown |
 
 ---
 
-## 8. Optional config files
+## Repo config files
 
-Add these to the repo for repeatable deploys (not required if set in platform UI).
+Phase 1 backend files (committed to the repo):
 
-### `Procfile` (repo root — Railway)
+| File | Platform | Purpose |
+| --- | --- | --- |
+| `Procfile` | Railway | Process type `web` → `scripts/start_api.sh` |
+| `railway.toml` | Railway | Start command, health check, Python 3.11, default env |
+| `scripts/start_api.sh` | Railway | Production uvicorn entrypoint (`$PORT`) |
+| `scripts/verify_phase1_backend.sh` | Local / CI | Phase 1.5 health gate |
+| `railway.env.example` | Railway | Variable template for dashboard |
+| `.python-version` | Railway / local | Python 3.11 |
 
-```text
-web: uvicorn src.api.main:app --host 0.0.0.0 --port ${PORT:-8000}
-```
+Phase 2 (Vercel) optional file:
 
 ### `ui/vercel.json` (Vercel SPA fallback)
 
@@ -253,32 +305,19 @@ web: uvicorn src.api.main:app --host 0.0.0.0 --port ${PORT:-8000}
 }
 ```
 
-### `railway.toml` (optional — Railway)
-
-```toml
-[build]
-builder = "nixpacks"
-
-[deploy]
-startCommand = "uvicorn src.api.main:app --host 0.0.0.0 --port $PORT"
-healthcheckPath = "/api/health"
-healthcheckTimeout = 300
-restartPolicyType = "on_failure"
-```
-
 ---
 
-## 9. Local parity
+## Local parity
 
 Match production locally:
 
 ```bash
-# Terminal 1 — API (same as Railway)
+# Terminal 1 — API (same as Railway / Phase 1)
 export GROQ_API_KEY=gsk_...
 export CORS_ORIGINS=http://localhost:5173
-uvicorn src.api.main:app --host 0.0.0.0 --port 8000
+bash scripts/start_api.sh
 
-# Terminal 2 — UI (same as Vercel build env)
+# Terminal 2 — UI (same as Vercel / Phase 2)
 cd ui
 export VITE_API_BASE_URL=http://127.0.0.1:8000
 npm run dev
@@ -286,7 +325,7 @@ npm run dev
 
 ---
 
-## 10. Cost notes (indicative)
+## Cost notes (indicative)
 
 | Service | Typical MVP cost |
 | --- | --- |
@@ -301,6 +340,6 @@ npm run dev
 
 | Item | Value |
 | --- | --- |
-| Backend | Railway — FastAPI + Chroma + Groq |
-| Frontend | Vercel — React/Vite in `ui/` |
+| Phase 1 | Railway — FastAPI + Chroma + Groq |
+| Phase 2 | Vercel — React/Vite in `ui/` |
 | Related | [`runbook.md`](./runbook.md), [`README.md`](../README.md) |

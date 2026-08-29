@@ -8,78 +8,80 @@ fields:
 schemes:
   kotak_large_cap_direct_growth:
     source_url: https://www.indmoney.com/mutual-funds/kotak-large-cap-fund-direct-growth
+    last_updated: 26 Aug 2026
+    candidates_from: phase_1_2_parse
     expense_ratio: 0.67%
     exit_load: 1.0% — Exit Load of 1% if redeemed in 0-1 Years
     min_sip: ₹100
     riskometer: Very High Risk
     benchmark: Nifty 100 TR INR
-    last_updated: 26 Aug 2026
-    candidates_from: phase_1_2_parse
     lock_in: No Lock-in
     min_lumpsum: ₹100
     aum: ₹11028 Cr
   kotak_midcap_direct_growth:
     source_url: https://www.indmoney.com/mutual-funds/kotak-midcap-fund-direct-growth
+    last_updated: 26 Aug 2026
+    candidates_from: phase_1_2_parse
     expense_ratio: 0.39%
     exit_load: 1.0% — Exit Load of 1% if redeemed in 0-1 Years
     min_sip: ₹100
     riskometer: Very High Risk
     benchmark: Nifty Midcap 150 TR INR
-    last_updated: 26 Aug 2026
-    candidates_from: phase_1_2_parse
     lock_in: No Lock-in
     min_lumpsum: ₹100
     aum: ₹69283 Cr
   kotak_arbitrage_direct_growth:
     source_url: https://www.indmoney.com/mutual-funds/kotak-arbitrage-fund-direct-growth
+    last_updated: 26 Aug 2026
+    candidates_from: phase_1_2_parse
     expense_ratio: 2.3734%
     exit_load: 0.2% — Exit Load of 0.25% if redeemed in 0-30 Days
     min_sip: ₹100
     riskometer: Low Risk
     benchmark: NIFTY 50 Arbitrage TR INR
-    last_updated: 26 Aug 2026
-    candidates_from: phase_1_2_parse
     lock_in: No Lock-in
     min_lumpsum: ₹100
     aum: ₹74399 Cr
   kotak_savings_direct_growth:
     source_url: https://www.indmoney.com/mutual-funds/kotak-savings-fund-direct-growth
+    last_updated: 25 Aug 2026
+    candidates_from: phase_1_2_parse
     expense_ratio: 0.37%
     exit_load: 0%
     min_sip: ₹100
     riskometer: Moderate Risk
     benchmark: NIFTY Ultra Short Duration Debt TR INR
-    last_updated: 25 Aug 2026
-    candidates_from: phase_1_2_parse
     lock_in: No Lock-in
     min_lumpsum: ₹100
     aum: ₹15708 Cr
   kotak_gold_growth_direct:
     source_url: https://www.indmoney.com/mutual-funds/kotak-gold-fund-growth-direct
+    last_updated: 26 Aug 2026
+    candidates_from: phase_1_2_parse
     expense_ratio: 0.66%
     exit_load: 1.0% — Exit Load of 1% if redeemed in 0-15 Days
     min_sip: ₹100
     riskometer: High Risk
     benchmark: Domestic Price of Physical Gold TR INR
-    last_updated: 26 Aug 2026
-    candidates_from: phase_1_2_parse
     lock_in: No Lock-in
     min_lumpsum: ₹100
     aum: ₹6532 Cr
   kotak_flexicap_direct_growth:
     source_url: https://www.indmoney.com/mutual-funds/kotak-flexicap-fund-direct-growth
+    last_updated: 26 Aug 2026
+    candidates_from: phase_1_2_parse
     expense_ratio: 0.61%
     exit_load: 1.0% — Exit Load of 1% if redeemed in 0-1 Years
     min_sip: ₹100
     riskometer: Very High Risk
     benchmark: Nifty 500 TR INR
-    last_updated: 26 Aug 2026
-    candidates_from: phase_1_2_parse
     lock_in: No Lock-in
     min_lumpsum: ₹100
     aum: ₹56119 Cr
   kotak_liquid_growth_direct:
     source_url: https://www.indmoney.com/mutual-funds/kotak-liquid-fund-growth-direct
+    last_updated: 26 Aug 2026
+    candidates_from: phase_1_2_parse
     expense_ratio: 0.19%
     exit_load: 0.0% — Exit Load of 0.007% if redeemed in 0-1 Days, 0.0065% if redeemed
       in 1-2 Days, 0.006% if redeemed in 2-3 Days, 0.0055% if redeemed in 3-4 Days,
@@ -87,9 +89,7 @@ schemes:
     min_sip: --
     riskometer: Moderate Risk
     benchmark: Nifty Liquid Index TR INR
-    last_updated: 26 Aug 2026
-    candidates_from: phase_1_2_parse
     lock_in: No Lock-in
     min_lumpsum: ₹1,000
     aum: ₹51309 Cr
-updated_at: '2026-08-27T09:21:35+00:00'
+updated_at: '2026-08-29T14:23:22+00:00'

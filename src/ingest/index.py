@@ -27,7 +27,7 @@ from src.config import REPO_ROOT, get_settings
 from src.guardrails.citations import is_allowed_citation
 from src.ingest.chunk import load_structured_facts
 from src.ingest.fetch import load_manifest_schemes
-from src.logging_config import get_logger, setup_logging
+from src.logging_config import get_logger, log_checkpoint, log_manifest_roster, setup_logging
 from src.rag.embeddings import get_embedding_function
 
 logger = get_logger(__name__)
@@ -217,14 +217,41 @@ def get_chroma_collection(
 ) -> Collection:
     path = _resolve_path(vector_store_path)
     path.mkdir(parents=True, exist_ok=True)
+    log_checkpoint(
+        logger,
+        "P1.4",
+        "chroma_open",
+        "Open persistent Chroma vector store",
+        path=_display_path(path),
+        collection=collection_name,
+        recreate=recreate,
+    )
     client = chromadb.PersistentClient(path=str(path))
     if recreate:
+        log_checkpoint(logger, "P1.4", "chroma_recreate", "Delete and recreate collection", collection=collection_name)
         try:
             client.delete_collection(name=collection_name)
         except Exception:
             pass
+    if embedding_function is None:
+        log_checkpoint(
+            logger,
+            "P1.4",
+            "embedding_init",
+            "Initialize embedding function for Chroma upsert",
+            model=embedding_model,
+        )
     ef = embedding_function or get_embedding_function(embedding_model)
-    return client.get_or_create_collection(name=collection_name, embedding_function=ef)
+    collection = client.get_or_create_collection(name=collection_name, embedding_function=ef)
+    log_checkpoint(
+        logger,
+        "P1.4",
+        "chroma_ready",
+        "Chroma collection ready for vector upsert",
+        collection=collection_name,
+        vectors=collection.count(),
+    )
+    return collection
 
 
 def delete_doc_vectors(collection: Collection, doc_id: str) -> None:
@@ -243,10 +270,28 @@ def upsert_scheme_chunks(
 ) -> tuple[int, int]:
     """Delete all vectors for doc_id, then insert deduped chunks. Returns (loaded, indexed)."""
     validate_chunk_sources(chunks)
-    deduped, _ = dedupe_chunks_by_content_hash(chunks)
+    deduped, deduped_count = dedupe_chunks_by_content_hash(chunks)
+    log_checkpoint(
+        logger,
+        "P1.4",
+        "dedupe_chunks",
+        "Deduplicate chunks by content_hash before embedding",
+        doc_id=doc_id,
+        loaded=len(chunks),
+        kept=len(deduped),
+        deduped=deduped_count,
+    )
+    log_checkpoint(
+        logger,
+        "P1.4",
+        "chroma_delete_doc",
+        "Delete stale vectors for scheme doc_id (idempotent refresh)",
+        doc_id=doc_id,
+    )
     delete_doc_vectors(collection, doc_id)
 
     if not deduped:
+        log_checkpoint(logger, "P1.4", "chroma_upsert_skip", "No chunks to embed for doc_id", doc_id=doc_id)
         return len(chunks), 0
 
     ids: list[str] = []
@@ -262,7 +307,24 @@ def upsert_scheme_chunks(
         documents.append(text)
         metadatas.append(chunk_to_metadata(chunk))
 
+    log_checkpoint(
+        logger,
+        "P1.4",
+        "embed_and_upsert",
+        "Embed chunk.text and upsert vectors into Chroma",
+        doc_id=doc_id,
+        vectors=len(ids),
+    )
     collection.add(ids=ids, documents=documents, metadatas=metadatas)
+    log_checkpoint(
+        logger,
+        "P1.4",
+        "chroma_upsert_done",
+        "Chroma upsert complete for scheme",
+        doc_id=doc_id,
+        vectors_indexed=len(ids),
+        collection_total=collection.count(),
+    )
     return len(chunks), len(ids)
 
 
@@ -533,15 +595,25 @@ def run_index(
     scheme_id_list = [str(s["scheme_id"]) for s in schemes]
     started_at = _utc_now_iso()
     run_id = started_at.replace(":", "").replace("+", "Z")
-    logger.info(
-        "Index run %s | schemes=%d | model=%s | collection=%s | recreate=%s",
-        run_id,
-        len(schemes),
-        model,
-        coll_name,
-        recreate_collection,
+    log_checkpoint(
+        logger,
+        "P1.4",
+        "manifest",
+        "Index chunks into Chroma vector store",
+        schemes=len(schemes),
+        model=model,
+        collection=coll_name,
+        run_id=run_id,
     )
+    log_manifest_roster(logger, schemes)
 
+    log_checkpoint(
+        logger,
+        "P1.4",
+        "validate_structured_facts",
+        "Validate Tier-0 structured facts (expense/exit/SIP/risk/benchmark)",
+        path=_display_path(facts_path),
+    )
     facts_report = validate_structured_facts(facts_path, scheme_ids=scheme_id_list)
     logger.info(
         "Structured facts validation | status=%s | schemes=%d",
@@ -554,7 +626,6 @@ def run_index(
     )
     facts = load_structured_facts(facts_path)
 
-    logger.info("Loading Chroma collection at %s", _display_path(store_path))
     chroma_collection = collection or get_chroma_collection(
         vector_store_path=store_path,
         collection_name=coll_name,
@@ -582,8 +653,24 @@ def run_index(
             continue
 
         try:
-            logger.info("%s Embedding and upserting chunks for %s", step, scheme_id)
+            display = str(scheme.get("display_name") or scheme_id)
+            log_checkpoint(
+                logger,
+                "P1.4",
+                "scheme_index_start",
+                f"Index vectors for {display}",
+                scheme_id=scheme_id,
+                doc_id=doc_id,
+            )
             scheme_chunks = load_scheme_chunks(chunks, scheme_id)
+            log_checkpoint(
+                logger,
+                "P1.4",
+                "load_chunks",
+                "Loaded chunk JSON for embedding",
+                scheme_id=scheme_id,
+                chunks=len(scheme_chunks),
+            )
             loaded, indexed = upsert_scheme_chunks(
                 chroma_collection,
                 doc_id=doc_id,
@@ -621,7 +708,16 @@ def run_index(
 
     probe_status = "skipped"
     if run_probes and all(r.status == "success" for r in results):
-        logger.info("Running retrieval smoke probes for %d schemes", len(scheme_id_list))
+        expected = len(scheme_id_list) * len(CORE_FACETS)
+        log_checkpoint(
+            logger,
+            "P1.4",
+            "smoke_probes_start",
+            "Run retrieval smoke probes (Tier-0 + Tier-2 routing)",
+            schemes=len(scheme_id_list),
+            facets=len(CORE_FACETS),
+            expected_probes=expected,
+        )
         probes = run_retrieval_probes(
             chroma_collection,
             facts=facts,
@@ -633,11 +729,14 @@ def run_index(
             "success" if all(p.status == "pass" for p in probes) else "failed"
         )
         passed = sum(1 for p in probes if p.status == "pass")
-        logger.info(
-            "Retrieval probes | status=%s | passed=%d/%d",
-            probe_status,
-            passed,
-            len(probes),
+        log_checkpoint(
+            logger,
+            "P1.4",
+            "smoke_probes_done",
+            "Retrieval smoke probes complete",
+            passed=passed,
+            total=len(probes),
+            status=probe_status,
         )
 
     finished_at = _utc_now_iso()

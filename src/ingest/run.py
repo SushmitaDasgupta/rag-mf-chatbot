@@ -17,11 +17,12 @@ from datetime import datetime, timezone
 
 from src.config import get_settings
 from src.ingest.chunk import run_chunk
-from src.ingest.fetch import run_fetch
+from src.ingest.fetch import load_manifest_schemes, run_fetch
 from src.ingest.index import IndexRunSummary, run_index
 from src.ingest.parse import run_parse
 from src.logging_config import (
     get_logger,
+    log_manifest_roster,
     log_pipeline_footer,
     log_pipeline_header,
     log_stage,
@@ -79,7 +80,12 @@ def run_ingest(
     run_id = started_at.replace(":", "").replace("+", "Z")
     errors: list[str] = []
 
-    scheme_note = f"schemes={sorted(scheme_ids)}" if scheme_ids else "schemes=all"
+    manifest = manifest_path or settings.manifest_path
+    schemes = load_manifest_schemes(manifest)
+    if scheme_ids:
+        schemes = [s for s in schemes if s.get("scheme_id") in scheme_ids]
+
+    scheme_note = f"schemes={len(schemes)}"
     log_pipeline_header(
         logger,
         run_id,
@@ -88,6 +94,7 @@ def run_ingest(
             f"skip_parse={skip_parse} skip_chunk={skip_chunk} skip_index={skip_index}"
         ),
     )
+    log_manifest_roster(logger, schemes)
 
     fetch_status = "skipped"
     if not skip_fetch:
@@ -98,8 +105,9 @@ def run_ingest(
         )
         with log_stage(
             logger,
-            "1/4 FETCH",
-            detail=f"{scheme_note} | fallback_cached={fallback}",
+            "P1.1 FETCH",
+            detail="Download allowlisted scheme HTML → data/raw/ | "
+            f"{scheme_note} | fallback_cached={fallback}",
         ):
             fetch_summary = run_fetch(
                 manifest_path=manifest_path or settings.manifest_path,
@@ -121,7 +129,11 @@ def run_ingest(
             errors.append("parse skipped due to fetch failure")
             logger.warning("Skipping parse because fetch failed")
         else:
-            with log_stage(logger, "2/4 PARSE", detail=scheme_note):
+            with log_stage(
+                logger,
+                "P1.2 PARSE",
+                detail="Extract text/tables → data/processed/parsed/ | " + scheme_note,
+            ):
                 parse_summary = run_parse(
                     manifest_path=manifest_path or settings.manifest_path,
                     raw_dir=raw_dir or settings.raw_dir,
@@ -140,7 +152,11 @@ def run_ingest(
             errors.append("chunk skipped due to parse failure")
             logger.warning("Skipping chunk because parse failed")
         else:
-            with log_stage(logger, "3/4 CHUNK", detail=scheme_note):
+            with log_stage(
+                logger,
+                "P1.3 CHUNK",
+                detail="Section-aware chunks → data/processed/chunks/ | " + scheme_note,
+            ):
                 chunk_summary = run_chunk(
                     manifest_path=manifest_path or settings.manifest_path,
                     parsed_dir=parsed_dir or settings.parsed_dir,
@@ -162,10 +178,10 @@ def run_ingest(
         else:
             with log_stage(
                 logger,
-                "4/4 INDEX",
+                "P1.4 INDEX",
                 detail=(
-                    f"{scheme_note} | probes={not skip_probes} "
-                    f"recreate={recreate_collection}"
+                    "Embed vectors + upsert Chroma + smoke probes | "
+                    f"{scheme_note} | probes={not skip_probes} recreate={recreate_collection}"
                 ),
             ):
                 index_summary = run_index(

@@ -22,7 +22,7 @@ import yaml
 
 from src.config import REPO_ROOT, get_settings
 from src.guardrails.citations import is_allowed_citation
-from src.logging_config import get_logger, setup_logging
+from src.logging_config import get_logger, log_checkpoint, log_manifest_roster, setup_logging
 
 logger = get_logger(__name__)
 
@@ -450,13 +450,16 @@ def run_fetch(
     mode = "verify-only" if verify_only else "network"
     if fallback_to_cached and not verify_only:
         mode = "network+cached-fallback"
-    logger.info(
-        "Fetch run %s | schemes=%d | mode=%s | retries=%d",
-        run_id,
-        len(schemes),
-        mode,
-        retry_count,
+    log_checkpoint(
+        logger,
+        "P1.1",
+        "manifest",
+        "Loaded allowlisted scheme manifest",
+        schemes=len(schemes),
+        mode=mode,
+        run_id=run_id,
     )
+    log_manifest_roster(logger, schemes)
 
     owns_client = client is None and not verify_only
     http = client
@@ -472,11 +475,16 @@ def run_fetch(
             scheme_id = str(scheme["scheme_id"])
             prev = _previous_hash(log_path, scheme_id)
             step = f"[{index + 1}/{len(schemes)}]"
+            display = str(scheme.get("display_name") or scheme_id)
             if verify_only:
-                logger.info("%s Verifying cached raw HTML for %s", step, scheme_id)
+                log_checkpoint(
+                    logger, "P1.1", "verify_raw", f"Verify cached HTML for {display}", scheme_id=scheme_id
+                )
                 result = verify_existing_raw(scheme, raw_dir=raw, previous_hash=prev)
             else:
-                logger.info("%s Fetching %s from allowlisted URL", step, scheme_id)
+                log_checkpoint(
+                    logger, "P1.1", "fetch_url", f"Download scheme page for {display}", scheme_id=scheme_id
+                )
                 assert http is not None
                 result = fetch_scheme_with_fallback(
                     scheme,

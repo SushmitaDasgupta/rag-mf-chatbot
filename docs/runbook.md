@@ -89,13 +89,30 @@ GitHub sends email to watchers when a scheduled workflow fails. Configure repo *
 
 ### Log readability
 
-The ingest pipeline emits structured logs:
+The ingest pipeline emits structured logs aligned with `docs/implementation.md` Phase 1 checkpoints:
 
 ```text
-2026-08-29 14:11:39 | INFO  | src.ingest.run | STAGE START: 1/4 FETCH — schemes=all | fallback_cached=True
-2026-08-29 14:11:40 | INFO  | src.ingest.fetch | [1/7] Fetching kotak_large_cap_direct_growth from allowlisted URL
-2026-08-29 14:11:41 | INFO  | src.ingest.fetch | [1/7] kotak_large_cap_direct_growth OK | mode=cached | http=n/a | bytes=368095 | hash=unchanged
+CORPUS MANIFEST | schemes_in_scope=7
+  [1/7] Kotak Large Cap Fund – Direct Growth
+         scheme_id=kotak_large_cap_direct_growth | category=Large-cap
+         source_url=https://www.indmoney.com/mutual-funds/kotak-large-cap-fund-direct-growth
+========================================================================
+STAGE START: P1.1 FETCH — Download allowlisted scheme HTML → data/raw/
+CHECKPOINT | P1.1 | fetch_url | Download scheme page for Kotak Large Cap Fund – Direct Growth | scheme_id=...
+CHECKPOINT | P1.2 | parse_html | Extract text/tables for Kotak Large Cap Fund – Direct Growth | scheme_id=...
+CHECKPOINT | P1.3 | chunk_sections | Build section-aware chunks for Kotak Large Cap Fund – Direct Growth | scheme_id=...
+CHECKPOINT | P1.4 | load_embedding_model | Loading sentence-transformers model for vector embeddings | model=BAAI/bge-small-en-v1.5
+CHECKPOINT | P1.4 | embed_and_upsert | Embed chunk.text and upsert vectors into Chroma | doc_id=... | vectors=21
+CHECKPOINT | P1.4 | smoke_probes_done | Retrieval smoke probes complete | passed=35/35
+STAGE DONE: P1.4 INDEX (45.2s)
 ```
+
+| Phase | What the logs show |
+| --- | --- |
+| **P1.1 FETCH** | Which schemes are downloaded; network vs cached fallback; content hash |
+| **P1.2 PARSE** | Text/table extraction; `structured_facts.yaml` update |
+| **P1.3 CHUNK** | Section-aware chunk counts, facets, JSON/JSONL export |
+| **P1.4 INDEX** | Embedding model load → Chroma open → per-scheme embed/upsert → 35 smoke probes |
 
 - Set `LOG_LEVEL=DEBUG` for more detail; `WARNING` for quieter CI output
 - GitHub Actions sets `HF_HUB_DISABLE_PROGRESS_BARS=1` to hide embedding model progress spam

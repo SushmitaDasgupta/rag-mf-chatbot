@@ -8,6 +8,10 @@ import numpy as np
 from chromadb.api.types import Documents, EmbeddingFunction, Embeddings
 from sentence_transformers import SentenceTransformer
 
+from src.logging_config import get_logger, log_checkpoint
+
+logger = get_logger(__name__)
+
 DEFAULT_EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"
 
 BGE_QUERY_PREFIX = "Represent this sentence for searching relevant passages: "
@@ -35,7 +39,22 @@ class SentenceTransformerEmbedding(EmbeddingFunction[Documents]):
 
     def __init__(self, model_name: str = DEFAULT_EMBEDDING_MODEL) -> None:
         self._model_name = model_name
+        log_checkpoint(
+            logger,
+            "P1.4",
+            "load_embedding_model",
+            "Loading sentence-transformers model for vector embeddings",
+            model=model_name,
+        )
         self._model = SentenceTransformer(model_name)
+        log_checkpoint(
+            logger,
+            "P1.4",
+            "embedding_model_ready",
+            "Embedding model loaded",
+            model=model_name,
+            dims=self._model.get_sentence_embedding_dimension(),
+        )
 
     def __call__(self, input: Documents) -> Embeddings:
         texts = [format_document_for_embedding(t, self._model_name) for t in input]

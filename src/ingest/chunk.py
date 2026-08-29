@@ -22,7 +22,7 @@ import yaml
 from src.config import REPO_ROOT, get_settings
 from src.guardrails.citations import is_allowed_citation
 from src.ingest.fetch import load_manifest_schemes
-from src.logging_config import get_logger, setup_logging
+from src.logging_config import get_logger, log_checkpoint, log_manifest_roster, setup_logging
 
 logger = get_logger(__name__)
 
@@ -754,7 +754,10 @@ def run_chunk(
 
     started_at = _utc_now_iso()
     run_id = started_at.replace(":", "").replace("+", "Z")
-    logger.info("Chunk run %s | schemes=%d", run_id, len(schemes))
+    log_checkpoint(
+        logger, "P1.3", "manifest", "Chunk parsed JSON artifacts", schemes=len(schemes), run_id=run_id
+    )
+    log_manifest_roster(logger, schemes)
     results: list[SchemeChunkResult] = []
     chunks_by_scheme: dict[str, list[Chunk]] = {}
 
@@ -787,6 +790,13 @@ def run_chunk(
             continue
 
         logger.info("%s Chunking parsed JSON for %s", step, scheme_id)
+        log_checkpoint(
+            logger,
+            "P1.3",
+            "chunk_sections",
+            f"Build section-aware chunks for {scheme.get('display_name') or scheme_id}",
+            scheme_id=scheme_id,
+        )
         result, chunks = chunk_scheme_file(
             parsed_path,
             chunks_dir=out,
@@ -824,6 +834,14 @@ def run_chunk(
     out.mkdir(parents=True, exist_ok=True)
     write_chunk_log(summary, out / "chunk_log.yaml")
     write_qc_notes(results, chunks_by_scheme, out / "CHUNK_QC.md")
+    log_checkpoint(
+        logger,
+        "P1.3",
+        "export_chunks",
+        "Wrote chunk JSON/JSONL artifacts",
+        path=_display_path(out),
+        schemes=len(results),
+    )
     _log_chunk_summary(summary)
     return summary
 

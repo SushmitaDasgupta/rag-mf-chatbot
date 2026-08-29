@@ -24,7 +24,7 @@ from bs4 import BeautifulSoup, NavigableString, Tag
 from src.config import REPO_ROOT, get_settings
 from src.guardrails.citations import is_allowed_citation
 from src.ingest.fetch import load_manifest_schemes
-from src.logging_config import get_logger, setup_logging
+from src.logging_config import get_logger, log_checkpoint, log_manifest_roster, setup_logging
 
 logger = get_logger(__name__)
 
@@ -832,12 +832,18 @@ def run_parse(
 
     started_at = _utc_now_iso()
     run_id = started_at.replace(":", "").replace("+", "Z")
-    logger.info("Parse run %s | schemes=%d", run_id, len(schemes))
+    log_checkpoint(
+        logger, "P1.2", "manifest", "Parse allowlisted raw HTML", schemes=len(schemes), run_id=run_id
+    )
+    log_manifest_roster(logger, schemes)
     results: list[SchemeParseResult] = []
     for index, scheme in enumerate(schemes):
         scheme_id = str(scheme["scheme_id"])
+        display = str(scheme.get("display_name") or scheme_id)
         step = f"[{index + 1}/{len(schemes)}]"
-        logger.info("%s Parsing raw HTML for %s", step, scheme_id)
+        log_checkpoint(
+            logger, "P1.2", "parse_html", f"Extract text/tables for {display}", scheme_id=scheme_id
+        )
         result = parse_scheme_html(scheme, raw_dir=raw, parsed_dir=parsed)
         results.append(result)
         if result.status == "success":
@@ -870,6 +876,14 @@ def run_parse(
     update_structured_facts(results, facts_path)
     write_parse_log(summary, parsed / "parse_log.yaml")
     write_spot_check_notes(results, parsed / "SPOT_CHECK.md")
+    log_checkpoint(
+        logger,
+        "P1.2",
+        "structured_facts",
+        "Updated structured_facts.yaml candidates",
+        path=_display_path(facts_path),
+        schemes=len(results),
+    )
     _log_parse_summary(summary)
     return summary
 

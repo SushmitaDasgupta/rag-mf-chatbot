@@ -17,7 +17,7 @@ if str(_REPO_ROOT) not in sys.path:
 from src.config import get_settings
 from src.ingest.fetch import load_manifest_schemes
 from src.ingest.index import get_chroma_collection
-from src.logging_config import get_logger, log_stage, setup_logging
+from src.logging_config import get_logger, log_checkpoint, log_stage, setup_logging
 from src.rag.retrieve import run_core_facet_probes
 
 logger = get_logger(__name__)
@@ -31,8 +31,8 @@ def main(argv: list[str] | None = None) -> int:
     settings = get_settings()
     setup_logging(settings.log_level)
 
-    with log_stage(logger, "RETRIEVAL PROBES"):
-        logger.info("Loading collection %s from %s", settings.chroma_collection, settings.vector_store_path)
+    with log_stage(logger, "P1.4 SMOKE PROBES", detail="Tier-0 + Tier-2 retrieval validation"):
+        log_checkpoint(logger, "P1.4", "smoke_probes", "Load Chroma collection for probe queries")
         collection = get_chroma_collection(
             vector_store_path=settings.vector_store_path,
             collection_name=settings.chroma_collection,

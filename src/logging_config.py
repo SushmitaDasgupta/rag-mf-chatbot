@@ -58,6 +58,45 @@ def get_logger(name: str) -> logging.Logger:
     return logging.getLogger(name)
 
 
+def log_checkpoint(
+    logger: logging.Logger,
+    phase: str,
+    step: str,
+    message: str,
+    **fields: object,
+) -> None:
+    """Emit a single-line pipeline checkpoint (maps to implementation.md P1.x steps)."""
+    if fields:
+        extras = " | ".join(f"{key}={value}" for key, value in fields.items())
+        logger.info("CHECKPOINT | %s | %s | %s | %s", phase, step, message, extras)
+    else:
+        logger.info("CHECKPOINT | %s | %s | %s", phase, step, message)
+
+
+def log_manifest_roster(logger: logging.Logger, schemes: list[dict]) -> None:
+    """Log which Kotak schemes from manifest.yaml are in scope for this run."""
+    logger.info("-" * 72)
+    logger.info("CORPUS MANIFEST | schemes_in_scope=%d", len(schemes))
+    for index, scheme in enumerate(schemes, start=1):
+        scheme_id = scheme.get("scheme_id")
+        display_name = scheme.get("display_name") or scheme_id
+        category = scheme.get("category") or "unknown"
+        source_url = scheme.get("source_url") or ""
+        logger.info(
+            "  [%d/%d] %s",
+            index,
+            len(schemes),
+            display_name,
+        )
+        logger.info(
+            "         scheme_id=%s | category=%s",
+            scheme_id,
+            category,
+        )
+        logger.info("         source_url=%s", source_url)
+    logger.info("-" * 72)
+
+
 @contextmanager
 def log_stage(
     logger: logging.Logger,

@@ -165,15 +165,14 @@ Expected: JSON with `"status": "ok"`, `"vector_count" > 0`, `"groq_configured": 
 
 | Setting | Value |
 | --- | --- |
-| **Framework Preset** | Vite (auto-detected from `ui/vercel.json`) |
-| **Root Directory** | `ui` |
-| **Build Command** | `npm run build` |
-| **Output Directory** | `dist` |
-| **Install Command** | `npm install` |
+| **Root Directory** | `/` (repo root) **or** `ui` — both work |
+| **Framework Preset** | Other / Vite (see `vercel.json` below) |
 
-The repo includes `ui/vercel.json` with these settings — Vercel should pick them up when root directory is `ui/`.
+**Repo root (`/`):** uses root [`vercel.json`](../vercel.json) — builds `ui/` and avoids FastAPI auto-detection on `src/api/main.py`.
 
-**Exit criteria:** Vercel project linked to repo with `ui/` as root.
+**`ui/` root:** uses [`ui/vercel.json`](../ui/vercel.json) — standard Vite preset with `dist` output.
+
+Do **not** leave Vercel on default FastAPI detection — the backend runs on Railway, not Vercel.
 
 ### Phase 2.2 — Environment variables
 
@@ -290,6 +289,7 @@ See [`runbook.md`](./runbook.md) for ingest failure handling.
 
 | Symptom | Likely cause | Fix |
 | --- | --- | --- |
+| `No FastAPI entrypoint found` on Vercel | Vercel auto-detected Python backend at repo root | Use root [`vercel.json`](../vercel.json) (`framework: null`, builds `ui/`) or set Root Directory to `ui/` |
 | `503 GROQ_API_KEY is not configured` | Missing secret on Railway | Set `GROQ_API_KEY` and redeploy (Phase 1.3) |
 | CORS error in browser | `CORS_ORIGINS` mismatch | Add exact Vercel URL to Railway `CORS_ORIGINS` |
 | `vector_count: 0` / degraded health | Chroma path wrong or empty deploy | Confirm `VECTOR_STORE_PATH=data/vectorstore` and `data/vectorstore/` exists in repo |
@@ -317,7 +317,8 @@ Phase 2 (Vercel) files:
 
 | File | Platform | Purpose |
 | --- | --- | --- |
-| `ui/vercel.json` | Vercel | Framework, build/output, SPA rewrites |
+| `vercel.json` | Vercel | Root deploy — builds `ui/`, disables FastAPI auto-detect |
+| `ui/vercel.json` | Vercel | Use when Root Directory is set to `ui/` |
 | `ui/.env.example` | Local / Vercel | `VITE_API_BASE_URL` template for `ui/` |
 | `vercel.env.example` | Vercel | Variable template for dashboard |
 | `scripts/build_ui_production.sh` | Local / CI | Production build with API URL guard |

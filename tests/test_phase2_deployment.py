@@ -9,6 +9,17 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 UI_DIR = REPO_ROOT / "ui"
 
 
+def test_phase2_root_vercel_json_builds_ui() -> None:
+    """Root deploy must target ui/ and not auto-detect FastAPI."""
+    path = REPO_ROOT / "vercel.json"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    assert data.get("framework") is None
+    assert "ui" in data["buildCommand"]
+    assert data["outputDirectory"] == "ui/dist"
+    rewrites = data["rewrites"]
+    assert any(r.get("destination") == "/index.html" for r in rewrites)
+
+
 def test_phase2_vercel_json() -> None:
     path = UI_DIR / "vercel.json"
     data = json.loads(path.read_text(encoding="utf-8"))

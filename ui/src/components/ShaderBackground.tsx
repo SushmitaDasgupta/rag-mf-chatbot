@@ -19,7 +19,8 @@ export function ShaderBackground() {
     const ro = new ResizeObserver(syncSize);
     ro.observe(canvas);
 
-    const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+    const gl = (canvas.getContext("webgl") ||
+      canvas.getContext("experimental-webgl")) as WebGLRenderingContext | null;
     if (!gl) return;
 
     const vs = `attribute vec2 a_position;

@@ -131,7 +131,7 @@ export function MessageList({
 }: {
   messages: ChatMessage[];
   loading: boolean;
-  bottomRef: React.RefObject<HTMLDivElement | null>;
+  bottomRef: React.Ref<HTMLDivElement>;
   onExample: (q: string) => void;
   examplesDisabled: boolean;
 }) {

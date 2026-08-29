@@ -29,12 +29,31 @@ def test_daily_ingest_workflow_has_manual_dispatch_and_concurrency() -> None:
     assert data["concurrency"]["cancel-in-progress"] is False
 
 
+INGEST_DIR = REPO_ROOT / "scripts" / "ingest"
+INGEST_PHASE_SCRIPTS = (
+    "run_fetch.sh",
+    "run_parse.sh",
+    "run_chunk.sh",
+    "run_index.sh",
+    "run_probes.sh",
+)
+
+
 def test_daily_ingest_workflow_runs_full_pipeline() -> None:
     text = WORKFLOW_PATH.read_text(encoding="utf-8")
-    assert "python -u -m src.ingest.run" in text
-    assert "--fetch-fallback-cached" in text
-    assert "python -u scripts/retrieval_probe.py" in text
+    for script in INGEST_PHASE_SCRIPTS:
+        assert f"scripts/ingest/{script}" in text
+    assert "--fetch-fallback-cached" in (INGEST_DIR / "run_fetch.sh").read_text(encoding="utf-8")
+    assert "--skip-probes" in (INGEST_DIR / "run_index.sh").read_text(encoding="utf-8")
     assert "GROQ_API_KEY" not in text
+
+
+def test_ingest_phase_scripts_exist_and_are_executable() -> None:
+    for script in INGEST_PHASE_SCRIPTS:
+        path = INGEST_DIR / script
+        assert path.is_file(), f"Missing ingest script: {path}"
+        assert path.stat().st_mode & 0o111, f"Script not executable: {path}"
+    assert (INGEST_DIR / "_common.sh").is_file()
 
 
 def test_daily_ingest_workflow_rebases_before_push() -> None:

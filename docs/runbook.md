@@ -51,9 +51,15 @@ The corpus is refreshed automatically **every day at 10:00 AM IST** (04:30 UTC) 
 
 1. Checkout `main`
 2. Install Python dependencies and cache the HuggingFace embedding model
-3. Run `python -m src.ingest.run` (fetch → parse → chunk → embed → Chroma upsert)
-4. Run `python scripts/retrieval_probe.py` (post-refresh smoke gate)
-5. Commit and push changed files under `data/raw`, `data/processed`, and `data/vectorstore` (only if there is a diff)
+3. Run ingest phases as **separate GitHub Actions steps** (each with its own log section):
+   - **P1.1** `scripts/ingest/run_fetch.sh` — download scheme HTML → `data/raw/`
+   - **P1.2** `scripts/ingest/run_parse.sh` — extract text/tables → `data/processed/parsed/`
+   - **P1.3** `scripts/ingest/run_chunk.sh` — section-aware chunks → `data/processed/chunks/`
+   - **P1.4** `scripts/ingest/run_index.sh` — embed + Chroma upsert → `data/vectorstore/`
+   - **P1.5** `scripts/ingest/run_probes.sh` — retrieval smoke gate
+4. Commit and push changed files under `data/raw`, `data/processed`, and `data/vectorstore` (only if there is a diff)
+
+For local full-pipeline runs, `python -m src.ingest.run --fetch-fallback-cached` still orchestrates all phases in one command.
 
 **No `GROQ_API_KEY` is required** — the scheduler is ingest-only.
 

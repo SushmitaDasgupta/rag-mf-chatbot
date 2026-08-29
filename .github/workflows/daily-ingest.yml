@@ -30,6 +30,28 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
+    env:
+      PYTHONUNBUFFERED: "1"
+      PYTHONFAULTHANDLER: "1"
+      GITHUB_ACTIONS: "true"
+      TQDM_DISABLE: "1"
+      EMBEDDING_MODEL: BAAI/bge-small-en-v1.5
+      VECTOR_STORE_PATH: data/vectorstore
+      CHROMA_COLLECTION: mutual_fund_chunks
+      MANIFEST_PATH: data/manifest.yaml
+      RAW_DIR: data/raw
+      PARSED_DIR: data/processed/parsed
+      CHUNKS_DIR: data/processed/chunks
+      STRUCTURED_FACTS_PATH: data/processed/structured_facts.yaml
+      FETCH_FALLBACK_CACHED: "true"
+      FETCH_RETRY_COUNT: "3"
+      FETCH_INTER_SCHEME_DELAY_SECONDS: "1.5"
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      LOG_LEVEL: INFO
+      HF_HUB_DISABLE_PROGRESS_BARS: "1"
+      TRANSFORMERS_VERBOSITY: error
+      INGEST_SCHEME_ID: ${{ inputs.scheme_id }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -58,48 +80,20 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run ingest pipeline
-        env:
-          PYTHONUNBUFFERED: "1"
-          PYTHONFAULTHANDLER: "1"
-          GITHUB_ACTIONS: "true"
-          TQDM_DISABLE: "1"
-          EMBEDDING_MODEL: BAAI/bge-small-en-v1.5
-          VECTOR_STORE_PATH: data/vectorstore
-          CHROMA_COLLECTION: mutual_fund_chunks
-          MANIFEST_PATH: data/manifest.yaml
-          RAW_DIR: data/raw
-          PARSED_DIR: data/processed/parsed
-          CHUNKS_DIR: data/processed/chunks
-          STRUCTURED_FACTS_PATH: data/processed/structured_facts.yaml
-          FETCH_FALLBACK_CACHED: "true"
-          FETCH_RETRY_COUNT: "3"
-          FETCH_INTER_SCHEME_DELAY_SECONDS: "1.5"
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          LOG_LEVEL: INFO
-          HF_HUB_DISABLE_PROGRESS_BARS: "1"
-          TRANSFORMERS_VERBOSITY: error
-        run: |
-          set -euo pipefail
-          echo "=== INGEST PIPELINE START | sha=$(git rev-parse --short HEAD) | $(date -u -Iseconds) ==="
-          ARGS=(--fetch-fallback-cached)
-          if [ -n "${{ inputs.scheme_id }}" ]; then
-            ARGS+=(--scheme-id "${{ inputs.scheme_id }}")
-          fi
-          stdbuf -oL -eL python -u -m src.ingest.run "${ARGS[@]}"
-          echo "=== INGEST PIPELINE END | exit=$? ==="
+      - name: P1.1 Fetch scheme HTML
+        run: bash scripts/ingest/run_fetch.sh
 
-      - name: Run retrieval smoke probes
-        env:
-          PYTHONUNBUFFERED: "1"
-          GITHUB_ACTIONS: "true"
-          LOG_LEVEL: INFO
-          EMBEDDING_MODEL: BAAI/bge-small-en-v1.5
-          VECTOR_STORE_PATH: data/vectorstore
-          CHROMA_COLLECTION: mutual_fund_chunks
-        run: |
-          echo "=== RETRIEVAL PROBES START | $(date -u -Iseconds) ==="
-          stdbuf -oL -eL python -u scripts/retrieval_probe.py
+      - name: P1.2 Parse HTML artifacts
+        run: bash scripts/ingest/run_parse.sh
+
+      - name: P1.3 Chunk parsed documents
+        run: bash scripts/ingest/run_chunk.sh
+
+      - name: P1.4 Index embeddings in Chroma
+        run: bash scripts/ingest/run_index.sh
+
+      - name: P1.5 Run retrieval smoke probes
+        run: bash scripts/ingest/run_probes.sh
 
       - name: Commit refreshed corpus
         env:

@@ -42,13 +42,20 @@ npm run preview
 
 ## Environment
 
-Optional `.env` in `ui/`:
+Copy `ui/.env.example` to `ui/.env` for local overrides.
 
 ```env
+# Local dev: leave empty to use Vite proxy (/api -> localhost:8000)
 VITE_API_BASE_URL=
 ```
 
-Leave empty to use the Vite dev proxy. For production, set to your API origin.
+For Vercel production, set `VITE_API_BASE_URL` to your Railway API URL (see [`vercel.env.example`](../vercel.env.example) and [`docs/deployment.md`](../docs/deployment.md) Phase 2).
+
+Production build locally:
+
+```bash
+VITE_API_BASE_URL=https://your-api.up.railway.app bash ../scripts/build_ui_production.sh
+```
 
 ## Design tokens
 

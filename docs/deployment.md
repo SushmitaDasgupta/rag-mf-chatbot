@@ -165,15 +165,19 @@ Expected: JSON with `"status": "ok"`, `"vector_count" > 0`, `"groq_configured": 
 
 | Setting | Value |
 | --- | --- |
-| **Framework Preset** | Vite |
+| **Framework Preset** | Vite (auto-detected from `ui/vercel.json`) |
 | **Root Directory** | `ui` |
 | **Build Command** | `npm run build` |
 | **Output Directory** | `dist` |
 | **Install Command** | `npm install` |
 
+The repo includes `ui/vercel.json` with these settings — Vercel should pick them up when root directory is `ui/`.
+
 **Exit criteria:** Vercel project linked to repo with `ui/` as root.
 
 ### Phase 2.2 — Environment variables
+
+Copy from [`vercel.env.example`](../vercel.env.example) into **Vercel → Settings → Environment Variables**:
 
 | Variable | Required | Value |
 | --- | --- | --- |
@@ -183,24 +187,38 @@ Set for **Production** (and Preview if you want preview deployments to hit the s
 
 > Vite embeds `VITE_*` variables at **build time**. Changing the API URL requires a **redeploy**.
 
+Local production build test (optional):
+
+```bash
+VITE_API_BASE_URL=https://YOUR-RAILWAY-URL.up.railway.app bash scripts/build_ui_production.sh
+```
+
 **Exit criteria:** `VITE_API_BASE_URL` set to your Railway URL before first build.
 
-### Phase 2.3 — SPA routing (optional `vercel.json`)
+### Phase 2.3 — SPA routing (`ui/vercel.json`)
 
-If client-side routes are added later, place this in `ui/vercel.json`:
+Committed in the repo for client-side routing and Vercel build defaults:
 
 ```json
 {
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
 ```
 
-The current single-page app works without this for `/` only.
+**Exit criteria:** `ui/vercel.json` present (no manual Vercel dashboard overrides needed).
 
 ### Phase 2.4 — Deploy & verify
 
 1. Deploy the project
-2. Open the Vercel URL
+2. Verify with the included script (or open the URL manually):
+
+```bash
+bash scripts/verify_phase2_frontend.sh https://YOUR-APP.vercel.app https://YOUR-RAILWAY-URL.up.railway.app
+```
+
 3. Ask an example question (e.g. expense ratio for a Kotak scheme)
 4. Confirm a factual answer with citation, or a polite refusal for advisory prompts
 
@@ -295,15 +313,15 @@ Phase 1 backend files (committed to the repo):
 | `railway.env.example` | Railway | Variable template for dashboard |
 | `.python-version` | Railway / local | Python 3.11 |
 
-Phase 2 (Vercel) optional file:
+Phase 2 (Vercel) files:
 
-### `ui/vercel.json` (Vercel SPA fallback)
-
-```json
-{
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
-}
-```
+| File | Platform | Purpose |
+| --- | --- | --- |
+| `ui/vercel.json` | Vercel | Framework, build/output, SPA rewrites |
+| `ui/.env.example` | Local / Vercel | `VITE_API_BASE_URL` template for `ui/` |
+| `vercel.env.example` | Vercel | Variable template for dashboard |
+| `scripts/build_ui_production.sh` | Local / CI | Production build with API URL guard |
+| `scripts/verify_phase2_frontend.sh` | Local / CI | Phase 2.4 reachability gate |
 
 ---
 
@@ -321,6 +339,10 @@ bash scripts/start_api.sh
 cd ui
 export VITE_API_BASE_URL=http://127.0.0.1:8000
 npm run dev
+
+# Or test a production build locally:
+# VITE_API_BASE_URL=http://127.0.0.1:8000 bash scripts/build_ui_production.sh
+# cd ui && npm run preview
 ```
 
 ---

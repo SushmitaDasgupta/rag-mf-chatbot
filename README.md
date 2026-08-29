@@ -153,12 +153,18 @@ Phase-wise production deploy (backend first, then frontend): [`docs/deployment.m
 | Phase | Platform | Quick start |
 | --- | --- | --- |
 | **Phase 1** — Backend API | Railway | Connect repo → set `GROQ_API_KEY` + `CORS_ORIGINS` from [`railway.env.example`](railway.env.example) → deploy |
-| **Phase 2** — Frontend UI | Vercel | Set `VITE_API_BASE_URL` to Railway URL → deploy `ui/` |
+| **Phase 2** — Frontend UI | Vercel | Set `VITE_API_BASE_URL` from [`vercel.env.example`](vercel.env.example) → deploy `ui/` (uses `ui/vercel.json`) |
 
 Verify Phase 1 after deploy:
 
 ```bash
 bash scripts/verify_phase1_backend.sh https://YOUR-RAILWAY-URL.up.railway.app
+```
+
+Verify Phase 2 after deploy:
+
+```bash
+bash scripts/verify_phase2_frontend.sh https://YOUR-APP.vercel.app https://YOUR-RAILWAY-URL.up.railway.app
 ```
 
 ## Repo layout

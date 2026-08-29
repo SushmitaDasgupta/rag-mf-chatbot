@@ -1,0 +1,111 @@
+version: 1
+run_id: 2026-08-27T094500Z0000
+started_at: '2026-08-27T09:45:00+00:00'
+finished_at: '2026-08-27T09:45:01+00:00'
+overall_status: success
+schemes:
+- scheme_id: kotak_large_cap_direct_growth
+  source_url: https://www.indmoney.com/mutual-funds/kotak-large-cap-fund-direct-growth
+  status: success
+  chunk_count: 22
+  facets_present:
+  - expense_ratio
+  - exit_load
+  - min_sip
+  - riskometer
+  - benchmark
+  facets_absent: []
+  artifact_json: data/processed/chunks/kotak_large_cap_direct_growth.json
+  artifact_jsonl: data/processed/chunks/kotak_large_cap_direct_growth.jsonl
+  max_token_estimate: 113
+  error: null
+- scheme_id: kotak_midcap_direct_growth
+  source_url: https://www.indmoney.com/mutual-funds/kotak-midcap-fund-direct-growth
+  status: success
+  chunk_count: 19
+  facets_present:
+  - expense_ratio
+  - exit_load
+  - min_sip
+  - riskometer
+  - benchmark
+  facets_absent: []
+  artifact_json: data/processed/chunks/kotak_midcap_direct_growth.json
+  artifact_jsonl: data/processed/chunks/kotak_midcap_direct_growth.jsonl
+  max_token_estimate: 315
+  error: null
+- scheme_id: kotak_arbitrage_direct_growth
+  source_url: https://www.indmoney.com/mutual-funds/kotak-arbitrage-fund-direct-growth
+  status: success
+  chunk_count: 23
+  facets_present:
+  - expense_ratio
+  - exit_load
+  - min_sip
+  - riskometer
+  - benchmark
+  facets_absent: []
+  artifact_json: data/processed/chunks/kotak_arbitrage_direct_growth.json
+  artifact_jsonl: data/processed/chunks/kotak_arbitrage_direct_growth.jsonl
+  max_token_estimate: 125
+  error: null
+- scheme_id: kotak_savings_direct_growth
+  source_url: https://www.indmoney.com/mutual-funds/kotak-savings-fund-direct-growth
+  status: success
+  chunk_count: 20
+  facets_present:
+  - expense_ratio
+  - exit_load
+  - min_sip
+  - riskometer
+  - benchmark
+  facets_absent: []
+  artifact_json: data/processed/chunks/kotak_savings_direct_growth.json
+  artifact_jsonl: data/processed/chunks/kotak_savings_direct_growth.jsonl
+  max_token_estimate: 102
+  error: null
+- scheme_id: kotak_gold_growth_direct
+  source_url: https://www.indmoney.com/mutual-funds/kotak-gold-fund-growth-direct
+  status: success
+  chunk_count: 20
+  facets_present:
+  - expense_ratio
+  - exit_load
+  - min_sip
+  - riskometer
+  - benchmark
+  facets_absent: []
+  artifact_json: data/processed/chunks/kotak_gold_growth_direct.json
+  artifact_jsonl: data/processed/chunks/kotak_gold_growth_direct.jsonl
+  max_token_estimate: 98
+  error: null
+- scheme_id: kotak_flexicap_direct_growth
+  source_url: https://www.indmoney.com/mutual-funds/kotak-flexicap-fund-direct-growth
+  status: success
+  chunk_count: 23
+  facets_present:
+  - expense_ratio
+  - exit_load
+  - min_sip
+  - riskometer
+  - benchmark
+  facets_absent: []
+  artifact_json: data/processed/chunks/kotak_flexicap_direct_growth.json
+  artifact_jsonl: data/processed/chunks/kotak_flexicap_direct_growth.jsonl
+  max_token_estimate: 109
+  error: null
+- scheme_id: kotak_liquid_growth_direct
+  source_url: https://www.indmoney.com/mutual-funds/kotak-liquid-fund-growth-direct
+  status: success
+  chunk_count: 21
+  facets_present:
+  - expense_ratio
+  - exit_load
+  - min_sip
+  - riskometer
+  - benchmark
+  facets_absent: []
+  artifact_json: data/processed/chunks/kotak_liquid_growth_direct.json
+  artifact_jsonl: data/processed/chunks/kotak_liquid_growth_direct.jsonl
+  max_token_estimate: 170
+  error: null

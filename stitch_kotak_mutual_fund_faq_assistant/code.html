@@ -1,0 +1,523 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Kotak Mutual Fund FAQ Assistant</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "primary-fixed-dim": "#adc6ff",
+                "outline": "#8c909f",
+                "surface-dim": "#0b1326",
+                "surface-container": "#171f33",
+                "surface": "#0b1326",
+                "on-secondary": "#003731",
+                "primary": "#adc6ff",
+                "on-tertiary": "#472a00",
+                "error": "#ffb4ab",
+                "background": "#0b1326",
+                "on-secondary-container": "#004d44",
+                "surface-variant": "#2d3449",
+                "error-container": "#93000a",
+                "tertiary-fixed-dim": "#ffb95f",
+                "on-primary-container": "#00285d",
+                "tertiary-container": "#ca8100",
+                "on-primary": "#002e6a",
+                "secondary-fixed": "#62fae3",
+                "on-secondary-fixed": "#00201c",
+                "inverse-on-surface": "#283044",
+                "primary-fixed": "#d8e2ff",
+                "on-surface": "#dae2fd",
+                "surface-tint": "#adc6ff",
+                "secondary": "#44e2cd",
+                "on-primary-fixed-variant": "#004395",
+                "surface-container-low": "#131b2e",
+                "outline-variant": "#424754",
+                "on-tertiary-container": "#3e2400",
+                "on-error": "#690005",
+                "surface-bright": "#31394d",
+                "secondary-container": "#03c6b2",
+                "on-tertiary-fixed": "#2a1700",
+                "on-surface-variant": "#c2c6d6",
+                "on-tertiary-fixed-variant": "#653e00",
+                "on-error-container": "#ffdad6",
+                "inverse-primary": "#005ac2",
+                "surface-container-highest": "#2d3449",
+                "secondary-fixed-dim": "#3cddc7",
+                "surface-container-high": "#222a3d",
+                "on-primary-fixed": "#001a42",
+                "on-background": "#dae2fd",
+                "tertiary-fixed": "#ffddb8",
+                "inverse-surface": "#dae2fd",
+                "primary-container": "#4d8eff",
+                "surface-container-lowest": "#060e20",
+                "on-secondary-fixed-variant": "#005047",
+                "tertiary": "#ffb95f"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "xl": "32px",
+                "xs": "4px",
+                "margin": "24px",
+                "lg": "24px",
+                "gutter": "24px",
+                "md": "16px",
+                "base": "8px",
+                "sm": "8px"
+        },
+        "fontFamily": {
+                "body-lg": [
+                        "Inter"
+                ],
+                "label-md": [
+                        "Inter"
+                ],
+                "headline-lg-mobile": [
+                        "Inter"
+                ],
+                "label-sm": [
+                        "Inter"
+                ],
+                "headline-sm": [
+                        "Inter"
+                ],
+                "headline-md": [
+                        "Inter"
+                ],
+                "headline-lg": [
+                        "Inter"
+                ],
+                "body-sm": [
+                        "Inter"
+                ],
+                "body-md": [
+                        "Inter"
+                ]
+        },
+        "fontSize": {
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-md": [
+                        "14px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.01em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "28px",
+                        {
+                                "lineHeight": "36px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "label-sm": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-sm": [
+                        "20px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-md": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-sm": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        @keyframes slideDownHeader {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-down-header { animation: slideDownHeader 0.5s ease-out forwards; }
+
+        @keyframes slideDownBanner {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-down-banner { animation: slideDownBanner 0.3s ease-out forwards; }
+        
+        @keyframes fadeUpMsg {
+            from { transform: translateY(12px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-fade-up-msg { animation: fadeUpMsg 0.25s ease-out forwards; }
+        
+        @keyframes fadeUpPage {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-fade-up-page { animation: fadeUpPage 0.1s ease-out forwards; opacity: 0; }
+
+        @keyframes fillProgress {
+            from { width: 0; }
+        }
+        .animate-progress { animation: fillProgress 0.6s ease-out forwards; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+        .animate-shake { animation: shake 0.2s ease-in-out; }
+
+        @keyframes dotBounce {
+            0%, 100% { transform: translateY(0); opacity: 0.5; }
+            50% { transform: translateY(-4px); opacity: 1; }
+        }
+        .dot-typing { animation: dotBounce 1s infinite; }
+        .dot-typing:nth-child(2) { animation-delay: 0.2s; }
+        .dot-typing:nth-child(3) { animation-delay: 0.4s; }
+
+        .citation-link { position: relative; display: inline-block; }
+        .citation-link::after {
+            content: ''; position: absolute; width: 100%; transform: scaleX(0);
+            height: 1px; bottom: 0; left: 0; background-color: currentColor;
+            transform-origin: bottom right; transition: transform 0.25s ease-out;
+        }
+        .citation-link:hover::after { transform: scaleX(1); transform-origin: bottom left; }
+        .citation-animate-in::after {
+            animation: drawUnderline 0.5s ease-out forwards;
+            animation-delay: 0.5s;
+        }
+        @keyframes drawUnderline {
+            from { transform: scaleX(0); transform-origin: bottom left; }
+            to { transform: scaleX(1); transform-origin: bottom left; }
+        }
+
+        .stagger-page-1 { animation-delay: 100ms; }
+        .stagger-page-2 { animation-delay: 200ms; }
+        .stagger-page-3 { animation-delay: 300ms; }
+        
+        .stagger-msg-1 { animation-delay: 100ms; opacity: 0; }
+        .stagger-msg-2 { animation-delay: 250ms; opacity: 0; }
+        .stagger-msg-3 { animation-delay: 400ms; opacity: 0; }
+        .stagger-msg-4 { animation-delay: 550ms; opacity: 0; }
+
+        .stagger-chip-1 { animation-delay: 50ms; opacity: 0; animation: fadeUpPage 0.2s ease-out forwards; }
+        .stagger-chip-2 { animation-delay: 100ms; opacity: 0; animation: fadeUpPage 0.2s ease-out forwards; }
+        .stagger-chip-3 { animation-delay: 150ms; opacity: 0; animation: fadeUpPage 0.2s ease-out forwards; }
+
+        .chip-hover { transition: all 0.2s ease; }
+        .chip-hover:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        
+        /* Custom Scrollbar for chat area */
+        .chat-scroll::-webkit-scrollbar { width: 6px; }
+        .chat-scroll::-webkit-scrollbar-track { background: transparent; }
+        .chat-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .chat-scroll::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="bg-transparent text-on-background min-h-screen flex flex-col relative">
+<!-- STITCH_SHADER_START:ANIMATION_6 class="fixed inset-0 w-full h-full -z-10 pointer-events-none" -->
+<div class="fixed inset-0 w-full h-full -z-10 pointer-events-none" style="display:block;">
+<canvas id="shader-canvas-ANIMATION_6" style="display:block;width:100%;height:100%" width="1280" height="1057"></canvas>
+<script>
+(function() {
+  const canvas = document.getElementById('shader-canvas-ANIMATION_6');
+
+  // Sync the WebGL drawing-buffer size with the CSS-driven layout size.
+  // This fires on initial layout and whenever the element is resized.
+  function syncSize() {
+    const w = canvas.clientWidth  || 1280;
+    const h = canvas.clientHeight || 720;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width  = w;
+      canvas.height = h;
+    }
+  }
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(syncSize).observe(canvas);
+  }
+  syncSize();
+
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) return;
+  const vs = `attribute vec2 a_position;
+varying vec2 v_texCoord;
+void main() {
+  v_texCoord = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
+  const fs = `precision highp float;
+varying vec2 v_texCoord;
+uniform float u_time;
+uniform vec2 u_resolution;
+
+void main() {
+    vec2 uv = v_texCoord;
+    
+    // Create a very subtle, slow-moving gradient mesh
+    float noise = sin(uv.x * 2.0 + u_time * 0.2) * cos(uv.y * 2.0 + u_time * 0.1);
+    float noise2 = sin(uv.y * 3.0 - u_time * 0.15) * cos(uv.x * 1.5 + u_time * 0.25);
+    
+    // Base colors derived from the "Institutional Trust" dark theme
+    // surface: #0b1326 -> vec3(0.043, 0.075, 0.149)
+    // surface-container: #131b2e -> vec3(0.075, 0.106, 0.18)
+    vec3 color1 = vec3(0.043, 0.075, 0.149);
+    vec3 color2 = vec3(0.075, 0.106, 0.18);
+    vec3 color3 = vec3(0.05, 0.09, 0.17);
+    
+    vec3 finalColor = mix(color1, color2, noise * 0.5 + 0.5);
+    finalColor = mix(finalColor, color3, noise2 * 0.3 + 0.3);
+    
+    // Add a very faint "pulse" to the background
+    finalColor += sin(u_time * 0.5) * 0.01;
+    
+    gl_FragColor = vec4(finalColor, 1.0);
+}`;
+  function cs(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const pos = gl.getAttribLocation(prog, 'a_position');
+  gl.enableVertexAttribArray(pos);
+  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+  const uTime = gl.getUniformLocation(prog, 'u_time');
+  const uRes = gl.getUniformLocation(prog, 'u_resolution');
+  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+
+  // u_mouse is in pixel coordinates matching u_resolution (ShaderToy convention).
+  // Shaders that need normalized coords should use: u_mouse / u_resolution.
+  let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+  window.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width && rect.height) {
+      const nx = (event.clientX - rect.left) / rect.width;
+      const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+      mouse.x = nx * canvas.width;
+      mouse.y = ny * canvas.height;
+    }
+  });
+
+  function render(t) {
+    if (typeof ResizeObserver === 'undefined') syncSize();
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    if (uTime) gl.uniform1f(uTime, t * 0.001);
+    if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+    if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(render);
+  }
+  render(0);
+})();
+</script>
+</div>
+<!-- STITCH_SHADER_END:ANIMATION_6 -->
+<!-- Top Navigation Anchor (TopAppBar) -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-lg h-16 bg-surface/90 backdrop-blur-md border-b border-outline-variant animate-slide-down-header shadow-[0_4px_20px_-4px_rgba(0,0,0,0.5)]">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+<span class="font-headline-md text-headline-md text-on-surface">Kotak Mutual Fund FAQ Assistant</span>
+</div>
+<nav class="hidden md:flex gap-lg h-full items-end animate-fade-up-page stagger-page-1">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-label-md text-label-md" href="#">Dashboard</a>
+
+
+</nav>
+</header>
+<!-- Navigation Sidebar -->
+<aside class="hidden lg:flex w-[260px] flex-col gap-md bg-surface/90 backdrop-blur-md border-r border-outline-variant h-[calc(100vh-64px)] fixed left-0 top-16 py-md z-40 overflow-y-auto shrink-0 animate-fade-up-page stagger-page-1">
+<div class="px-md mb-sm">
+<button class="w-full bg-primary-container text-on-primary-container flex items-center justify-center gap-sm py-sm rounded-xl font-label-md hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[20px]">add</span>
+            New Chat
+        </button>
+</div>
+<div class="flex flex-col gap-xs px-md">
+<div class="font-label-sm text-on-surface-variant px-sm py-xs mt-xs mb-xs">Today</div>
+<a class="flex items-center gap-sm px-sm py-2 bg-surface-variant/80 rounded-lg text-on-surface" href="#">
+<span class="material-symbols-outlined text-[18px]">chat_bubble</span>
+<span class="font-label-md truncate">Exit Load - Flexicap</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 hover:bg-surface-variant/50 rounded-lg text-on-surface-variant transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">chat_bubble</span>
+<span class="font-label-md truncate">SIP Limits - Liquid Fund</span>
+</a>
+<div class="font-label-sm text-on-surface-variant px-sm py-xs mt-sm mb-xs">Previous 7 Days</div>
+<a class="flex items-center gap-sm px-sm py-2 hover:bg-surface-variant/50 rounded-lg text-on-surface-variant transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">chat_bubble</span>
+<span class="font-label-md truncate">NFO Details - Quant</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 hover:bg-surface-variant/50 rounded-lg text-on-surface-variant transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">chat_bubble</span>
+<span class="font-label-md truncate">Expense Ratio Comparison</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<div class="flex-grow flex flex-col items-center w-full lg:pl-[260px]">
+<!-- Compliance Banner -->
+<div class="w-full max-w-[1200px] mt-24 mb-md px-lg animate-slide-down-banner">
+<div class="bg-[#451a03]/90 backdrop-blur-md border-l-4 border-[#F59E0B] px-md py-sm rounded-r-lg flex items-center gap-sm">
+<span class="material-symbols-outlined text-[#F59E0B]" style="font-variation-settings: 'FILL' 1;">shield</span>
+<span class="font-body-sm text-body-sm text-on-surface">Facts-only. No investment advice.</span>
+</div>
+</div>
+<!-- Main Layout Container -->
+<main class="flex-grow w-full max-w-[1200px] px-lg flex flex-col md:flex-row gap-gutter pb-xl relative">
+<!-- Left Column: Chat Canvas -->
+<section class="flex-grow w-full flex flex-col bg-surface-container/90 backdrop-blur-md rounded-xl border border-outline-variant overflow-hidden h-[calc(100vh-200px)] animate-fade-up-page stagger-page-2">
+<!-- Header -->
+<div class="px-lg py-md border-b border-outline-variant bg-surface-container/90 backdrop-blur-md flex justify-between items-center shrink-0">
+<div>
+<h1 class="font-headline-sm text-headline-sm text-on-surface">Kotak Mutual Fund FAQ</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Objective, source-backed answers from curated scheme pages</p>
+</div>
+<div class="bg-surface-variant/80 px-sm py-xs rounded-full border border-outline-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[#3cddc7] text-[16px]">verified</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">7 schemes supported</span>
+</div>
+</div>
+<!-- Chat Transcript Area -->
+<div class="flex-grow p-lg overflow-y-auto chat-scroll flex flex-col gap-lg" id="chat-container">
+<!-- User Message -->
+<div class="flex justify-end animate-fade-up-msg stagger-msg-1">
+<div class="bg-primary-container text-on-primary-container rounded-t-[24px] rounded-l-[24px] rounded-br-[4px] p-md max-w-[80%]">
+<p class="font-body-md text-body-md">What is the exit load for Kotak Flexicap?</p>
+</div>
+</div>
+<!-- Assistant Response Card -->
+<div class="flex justify-start animate-fade-up-msg stagger-msg-2">
+<div class="bg-surface-container-high/90 border border-outline-variant rounded-t-[24px] rounded-r-[24px] rounded-bl-[4px] p-lg max-w-[85%] shadow-sm">
+<p class="font-body-md text-body-md text-on-surface mb-md">
+                                For the Kotak Flexicap Fund, the exit load is typically 1% if units are redeemed or switched out within 1 year from the date of allotment. If redeemed or switched out after 1 year, the exit load is Nil.
+                            </p>
+<div class="flex items-center justify-between mt-md pt-sm border-t border-outline-variant">
+<a class="flex items-center gap-xs border border-[#2DD4BF] text-[#2DD4BF] px-sm py-xs rounded-full font-label-sm text-label-sm hover:bg-[#2DD4BF]/10 transition-colors citation-link citation-animate-in" href="#">
+<span class="material-symbols-outlined text-[14px]">link</span>
+                                    View scheme source
+                                </a>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Last updated: 26 Aug 2026</span>
+</div>
+</div>
+</div>
+<!-- Refusal Card -->
+<div class="flex justify-start animate-fade-up-msg stagger-msg-3">
+<div class="bg-[#451225]/90 border-l-4 border-error rounded-r-xl p-md max-w-[85%]">
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-error mt-xs">info</span>
+<div>
+<p class="font-body-md text-body-md text-error mb-sm">
+                                        I can provide factual details regarding scheme parameters, but I cannot offer investment advice or recommendations.
+                                    </p>
+<a class="text-error font-label-md text-label-md underline hover:opacity-80" href="#">AMFI Investor Knowledge Centre</a>
+</div>
+</div>
+</div>
+</div>
+<!-- Typing Indicator -->
+<div class="flex justify-start animate-fade-up-msg stagger-msg-4 hidden" id="typing-indicator">
+<div class="bg-surface-container-high/90 border border-outline-variant rounded-t-[24px] rounded-r-[24px] rounded-bl-[4px] px-md py-sm flex items-center gap-xs">
+<div class="w-2 h-2 rounded-full bg-outline dot-typing"></div>
+<div class="w-2 h-2 rounded-full bg-outline dot-typing"></div>
+<div class="w-2 h-2 rounded-full bg-outline dot-typing"></div>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="p-md bg-surface-container/90 backdrop-blur-md border-t border-outline-variant shrink-0 animate-fade-up-page stagger-page-3">
+<!-- Chips -->
+<div class="flex gap-sm overflow-x-auto pb-sm mb-sm no-scrollbar">
+<button class="shrink-0 bg-surface/80 border border-outline-variant rounded-full px-sm py-xs font-label-sm text-label-sm text-on-surface-variant hover:border-primary hover:text-primary chip-hover stagger-chip-1">Expense ratio — Kotak Large Cap Fund</button>
+<button class="shrink-0 bg-surface/80 border border-outline-variant rounded-full px-sm py-xs font-label-sm text-label-sm text-on-surface-variant hover:border-primary hover:text-primary chip-hover stagger-chip-2">Exit load — Kotak Flexicap Fund</button>
+<button class="shrink-0 bg-surface/80 border border-outline-variant rounded-full px-sm py-xs font-label-sm text-label-sm text-on-surface-variant hover:border-primary hover:text-primary chip-hover stagger-chip-3">Minimum SIP — Kotak Liquid Fund</button>
+</div>
+<!-- Rate Limited Input -->
+<div class="relative flex items-center animate-shake" id="input-container">
+<input class="w-full bg-surface/80 border border-outline-variant rounded-xl py-sm pl-md pr-[120px] font-body-md text-body-md text-on-surface opacity-50 cursor-not-allowed" disabled="" placeholder="Ask about fund facts..." type="text">
+<div class="absolute right-md top-1/2 -translate-y-1/2 flex items-center gap-xs text-error">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+<span class="font-label-sm text-label-sm">Try again in 58s</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Anchor -->
+<footer class="w-full py-md px-lg flex flex-col md:flex-row justify-between items-center gap-sm bg-surface-container-lowest/90 backdrop-blur-md border-t border-outline-variant mt-auto">
+<div class="font-label-sm text-label-sm text-on-surface-variant">
+                © 2024 Kotak Mutual Fund. For informational purposes only.
+            </div>
+<div class="flex gap-md">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface hover:underline transition-all" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface hover:underline transition-all" href="#">Terms of Use</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface hover:underline transition-all" href="#">SEBI Disclosures</a>
+</div>
+</footer>
+</div>
+<script>
+    // Mock scroll into view
+    window.addEventListener('load', () => {
+        const chatContainer = document.getElementById('chat-container');
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    });
+</script>
+
+
+</body></html>

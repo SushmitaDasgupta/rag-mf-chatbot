@@ -1,0 +1,167 @@
+path: data/processed/structured_facts.yaml
+status: success
+schemes:
+  kotak_large_cap_direct_growth:
+    facets:
+      benchmark:
+        present: true
+        value: Nifty 100 TR INR
+        manual_override: false
+      exit_load:
+        present: true
+        value: 1.0% — Exit Load of 1% if redeemed in 0-1 Years
+        manual_override: false
+      expense_ratio:
+        present: true
+        value: 0.67%
+        manual_override: false
+      min_sip:
+        present: true
+        value: ₹100
+        manual_override: false
+      riskometer:
+        present: true
+        value: Very High Risk
+        manual_override: false
+    source_url: https://www.indmoney.com/mutual-funds/kotak-large-cap-fund-direct-growth
+  kotak_midcap_direct_growth:
+    facets:
+      benchmark:
+        present: true
+        value: Nifty Midcap 150 TR INR
+        manual_override: false
+      exit_load:
+        present: true
+        value: 1.0% — Exit Load of 1% if redeemed in 0-1 Years
+        manual_override: false
+      expense_ratio:
+        present: true
+        value: 0.39%
+        manual_override: false
+      min_sip:
+        present: true
+        value: ₹100
+        manual_override: false
+      riskometer:
+        present: true
+        value: Very High Risk
+        manual_override: false
+    source_url: https://www.indmoney.com/mutual-funds/kotak-midcap-fund-direct-growth
+  kotak_arbitrage_direct_growth:
+    facets:
+      benchmark:
+        present: true
+        value: NIFTY 50 Arbitrage TR INR
+        manual_override: false
+      exit_load:
+        present: true
+        value: 0.2% — Exit Load of 0.25% if redeemed in 0-30 Days
+        manual_override: false
+      expense_ratio:
+        present: true
+        value: 2.3734%
+        manual_override: false
+      min_sip:
+        present: true
+        value: ₹100
+        manual_override: false
+      riskometer:
+        present: true
+        value: Low Risk
+        manual_override: false
+    source_url: https://www.indmoney.com/mutual-funds/kotak-arbitrage-fund-direct-growth
+  kotak_savings_direct_growth:
+    facets:
+      benchmark:
+        present: true
+        value: NIFTY Ultra Short Duration Debt TR INR
+        manual_override: false
+      exit_load:
+        present: true
+        value: 0%
+        manual_override: false
+      expense_ratio:
+        present: true
+        value: 0.37%
+        manual_override: false
+      min_sip:
+        present: true
+        value: ₹100
+        manual_override: false
+      riskometer:
+        present: true
+        value: Moderate Risk
+        manual_override: false
+    source_url: https://www.indmoney.com/mutual-funds/kotak-savings-fund-direct-growth
+  kotak_gold_growth_direct:
+    facets:
+      benchmark:
+        present: true
+        value: Domestic Price of Physical Gold TR INR
+        manual_override: false
+      exit_load:
+        present: true
+        value: 1.0% — Exit Load of 1% if redeemed in 0-15 Days
+        manual_override: false
+      expense_ratio:
+        present: true
+        value: 0.66%
+        manual_override: false
+      min_sip:
+        present: true
+        value: ₹100
+        manual_override: false
+      riskometer:
+        present: true
+        value: High Risk
+        manual_override: false
+    source_url: https://www.indmoney.com/mutual-funds/kotak-gold-fund-growth-direct
+  kotak_flexicap_direct_growth:
+    facets:
+      benchmark:
+        present: true
+        value: Nifty 500 TR INR
+        manual_override: false
+      exit_load:
+        present: true
+        value: 1.0% — Exit Load of 1% if redeemed in 0-1 Years
+        manual_override: false
+      expense_ratio:
+        present: true
+        value: 0.61%
+        manual_override: false
+      min_sip:
+        present: true
+        value: ₹100
+        manual_override: false
+      riskometer:
+        present: true
+        value: Very High Risk
+        manual_override: false
+    source_url: https://www.indmoney.com/mutual-funds/kotak-flexicap-fund-direct-growth
+  kotak_liquid_growth_direct:
+    facets:
+      benchmark:
+        present: true
+        value: Nifty Liquid Index TR INR
+        manual_override: false
+      exit_load:
+        present: true
+        value: 0.0% — Exit Load of 0.007% if redeemed in 0-1 Days, 0.0065% if redeemed
+          in 1-2 Days, 0.006% if redeemed in 2-3 Days, 0.0055% if redeemed in 3-4
+          Days, 0.005% if redeemed in 4-5 Days, 0.0045% if redeemed in 5-6 Days
+        manual_override: false
+      expense_ratio:
+        present: true
+        value: 0.19%
+        manual_override: false
+      min_sip:
+        present: true
+        value: --
+        manual_override: false
+      riskometer:
+        present: true
+        value: Moderate Risk
+        manual_override: false
+    source_url: https://www.indmoney.com/mutual-funds/kotak-liquid-fund-growth-direct
+missing: []

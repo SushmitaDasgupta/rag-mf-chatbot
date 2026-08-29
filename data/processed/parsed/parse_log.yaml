@@ -1,0 +1,169 @@
+version: 1
+run_id: 2026-08-27T092135Z0000
+started_at: '2026-08-27T09:21:35+00:00'
+finished_at: '2026-08-27T09:21:35+00:00'
+overall_status: success
+schemes:
+- scheme_id: kotak_large_cap_direct_growth
+  status: success
+  source_url: https://www.indmoney.com/mutual-funds/kotak-large-cap-fund-direct-growth
+  artifact_path: data/processed/parsed/kotak_large_cap_direct_growth.json
+  content_hash: d25059a31dcb9f687cb558580842747586213ee713ca5b4cde902efb41a2cb97
+  flags:
+    parse_source: next_data
+    fee_load_tables_ok: true
+    manual_override_needed: false
+    section_count: 17
+    table_count: 4
+    network_used: false
+  structured_fact_candidates:
+    expense_ratio: 0.67%
+    exit_load: 1.0% — Exit Load of 1% if redeemed in 0-1 Years
+    min_sip: ₹100
+    riskometer: Very High Risk
+    benchmark: Nifty 100 TR INR
+    lock_in: No Lock-in
+    min_lumpsum: ₹100
+    aum: ₹11028 Cr
+    as_of_date: 26 Aug 2026
+  error: null
+- scheme_id: kotak_midcap_direct_growth
+  status: success
+  source_url: https://www.indmoney.com/mutual-funds/kotak-midcap-fund-direct-growth
+  artifact_path: data/processed/parsed/kotak_midcap_direct_growth.json
+  content_hash: 72dc47131a544a3085d365525e626f239a98a252051e3c91d0011029fc0986e3
+  flags:
+    parse_source: next_data
+    fee_load_tables_ok: true
+    manual_override_needed: false
+    section_count: 11
+    table_count: 4
+    network_used: false
+  structured_fact_candidates:
+    expense_ratio: 0.39%
+    exit_load: 1.0% — Exit Load of 1% if redeemed in 0-1 Years
+    min_sip: ₹100
+    riskometer: Very High Risk
+    benchmark: Nifty Midcap 150 TR INR
+    lock_in: No Lock-in
+    min_lumpsum: ₹100
+    aum: ₹69283 Cr
+    as_of_date: 26 Aug 2026
+  error: null
+- scheme_id: kotak_arbitrage_direct_growth
+  status: success
+  source_url: https://www.indmoney.com/mutual-funds/kotak-arbitrage-fund-direct-growth
+  artifact_path: data/processed/parsed/kotak_arbitrage_direct_growth.json
+  content_hash: 6f104ee880c34a3a056fec3b1f90dff30ee8f9c88a8afa1bf579c25d99fc4422
+  flags:
+    parse_source: next_data
+    fee_load_tables_ok: true
+    manual_override_needed: false
+    section_count: 17
+    table_count: 4
+    network_used: false
+  structured_fact_candidates:
+    expense_ratio: 2.3734%
+    exit_load: 0.2% — Exit Load of 0.25% if redeemed in 0-30 Days
+    min_sip: ₹100
+    riskometer: Low Risk
+    benchmark: NIFTY 50 Arbitrage TR INR
+    lock_in: No Lock-in
+    min_lumpsum: ₹100
+    aum: ₹74399 Cr
+    as_of_date: 26 Aug 2026
+  error: null
+- scheme_id: kotak_savings_direct_growth
+  status: success
+  source_url: https://www.indmoney.com/mutual-funds/kotak-savings-fund-direct-growth
+  artifact_path: data/processed/parsed/kotak_savings_direct_growth.json
+  content_hash: 5100c860b0324b6a96079d1af32e28dd3eee1e5710431f905b20af419774d95e
+  flags:
+    parse_source: next_data
+    fee_load_tables_ok: true
+    manual_override_needed: false
+    section_count: 16
+    table_count: 2
+    network_used: false
+  structured_fact_candidates:
+    expense_ratio: 0.37%
+    exit_load: 0%
+    min_sip: ₹100
+    riskometer: Moderate Risk
+    benchmark: NIFTY Ultra Short Duration Debt TR INR
+    lock_in: No Lock-in
+    min_lumpsum: ₹100
+    aum: ₹15708 Cr
+    as_of_date: 25 Aug 2026
+  error: null
+- scheme_id: kotak_gold_growth_direct
+  status: success
+  source_url: https://www.indmoney.com/mutual-funds/kotak-gold-fund-growth-direct
+  artifact_path: data/processed/parsed/kotak_gold_growth_direct.json
+  content_hash: d7853a39fca9b1240d0665ce62baffe79b082025f9c48b694072eecbf38fa5b4
+  flags:
+    parse_source: next_data
+    fee_load_tables_ok: true
+    manual_override_needed: false
+    section_count: 17
+    table_count: 3
+    network_used: false
+  structured_fact_candidates:
+    expense_ratio: 0.66%
+    exit_load: 1.0% — Exit Load of 1% if redeemed in 0-15 Days
+    min_sip: ₹100
+    riskometer: High Risk
+    benchmark: Domestic Price of Physical Gold TR INR
+    lock_in: No Lock-in
+    min_lumpsum: ₹100
+    aum: ₹6532 Cr
+    as_of_date: 26 Aug 2026
+  error: null
+- scheme_id: kotak_flexicap_direct_growth
+  status: success
+  source_url: https://www.indmoney.com/mutual-funds/kotak-flexicap-fund-direct-growth
+  artifact_path: data/processed/parsed/kotak_flexicap_direct_growth.json
+  content_hash: 05695d39580b7661db52e90a55df756ade98d9bf6719d8e3f565ce06570f4c74
+  flags:
+    parse_source: next_data
+    fee_load_tables_ok: true
+    manual_override_needed: false
+    section_count: 17
+    table_count: 4
+    network_used: false
+  structured_fact_candidates:
+    expense_ratio: 0.61%
+    exit_load: 1.0% — Exit Load of 1% if redeemed in 0-1 Years
+    min_sip: ₹100
+    riskometer: Very High Risk
+    benchmark: Nifty 500 TR INR
+    lock_in: No Lock-in
+    min_lumpsum: ₹100
+    aum: ₹56119 Cr
+    as_of_date: 26 Aug 2026
+  error: null
+- scheme_id: kotak_liquid_growth_direct
+  status: success
+  source_url: https://www.indmoney.com/mutual-funds/kotak-liquid-fund-growth-direct
+  artifact_path: data/processed/parsed/kotak_liquid_growth_direct.json
+  content_hash: 2a7137bbd032c75e3c7b85dc371e793e2cd2a0fcaf30fa2b0a0cd021c8409624
+  flags:
+    parse_source: next_data
+    fee_load_tables_ok: true
+    manual_override_needed: false
+    section_count: 17
+    table_count: 2
+    network_used: false
+  structured_fact_candidates:
+    expense_ratio: 0.19%
+    exit_load: 0.0% — Exit Load of 0.007% if redeemed in 0-1 Days, 0.0065% if redeemed
+      in 1-2 Days, 0.006% if redeemed in 2-3 Days, 0.0055% if redeemed in 3-4 Days,
+      0.005% if redeemed in 4-5 Days, 0.0045% if redeemed in 5-6 Days
+    min_sip: --
+    riskometer: Moderate Risk
+    benchmark: Nifty Liquid Index TR INR
+    lock_in: No Lock-in
+    min_lumpsum: ₹1,000
+    aum: ₹51309 Cr
+    as_of_date: 26 Aug 2026
+  error: null

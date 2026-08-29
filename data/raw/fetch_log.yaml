@@ -1,0 +1,314 @@
+version: 1
+updated_at: '2026-08-27T09:13:37+00:00'
+latest_run_id: 2026-08-27T091336Z0000
+latest_overall_status: success
+schemes:
+- scheme_id: kotak_large_cap_direct_growth
+  doc_id: kotak_large_cap_direct_growth
+  display_name: Kotak Large Cap Fund – Direct Growth
+  source_url: https://www.indmoney.com/mutual-funds/kotak-large-cap-fund-direct-growth
+  status: success
+  http_status: null
+  content_hash: d25059a31dcb9f687cb558580842747586213ee713ca5b4cde902efb41a2cb97
+  content_bytes: 368095
+  fetched_at: '2026-08-27T09:09:18+00:00'
+  html_path: data/raw/kotak_large_cap_direct_growth.html
+  error: null
+  hash_changed: false
+- scheme_id: kotak_midcap_direct_growth
+  doc_id: kotak_midcap_direct_growth
+  display_name: Kotak Midcap Fund – Direct Growth
+  source_url: https://www.indmoney.com/mutual-funds/kotak-midcap-fund-direct-growth
+  status: success
+  http_status: null
+  content_hash: 72dc47131a544a3085d365525e626f239a98a252051e3c91d0011029fc0986e3
+  content_bytes: 374939
+  fetched_at: '2026-08-27T09:09:19+00:00'
+  html_path: data/raw/kotak_midcap_direct_growth.html
+  error: null
+  hash_changed: false
+- scheme_id: kotak_arbitrage_direct_growth
+  doc_id: kotak_arbitrage_direct_growth
+  display_name: Kotak Arbitrage Fund – Direct Growth
+  source_url: https://www.indmoney.com/mutual-funds/kotak-arbitrage-fund-direct-growth
+  status: success
+  http_status: null
+  content_hash: 6f104ee880c34a3a056fec3b1f90dff30ee8f9c88a8afa1bf579c25d99fc4422
+  content_bytes: 424811
+  fetched_at: '2026-08-27T09:09:19+00:00'
+  html_path: data/raw/kotak_arbitrage_direct_growth.html
+  error: null
+  hash_changed: false
+- scheme_id: kotak_savings_direct_growth
+  doc_id: kotak_savings_direct_growth
+  display_name: Kotak Savings Fund – Direct Growth
+  source_url: https://www.indmoney.com/mutual-funds/kotak-savings-fund-direct-growth
+  status: success
+  http_status: null
+  content_hash: 5100c860b0324b6a96079d1af32e28dd3eee1e5710431f905b20af419774d95e
+  content_bytes: 308290
+  fetched_at: '2026-08-27T09:09:19+00:00'
+  html_path: data/raw/kotak_savings_direct_growth.html
+  error: null
+  hash_changed: false
+- scheme_id: kotak_gold_growth_direct
+  doc_id: kotak_gold_growth_direct
+  display_name: Kotak Gold Fund – Growth Direct
+  source_url: https://www.indmoney.com/mutual-funds/kotak-gold-fund-growth-direct
+  status: success
+  http_status: null
+  content_hash: d7853a39fca9b1240d0665ce62baffe79b082025f9c48b694072eecbf38fa5b4
+  content_bytes: 295607
+  fetched_at: '2026-08-27T09:09:19+00:00'
+  html_path: data/raw/kotak_gold_growth_direct.html
+  error: null
+  hash_changed: false
+- scheme_id: kotak_flexicap_direct_growth
+  doc_id: kotak_flexicap_direct_growth
+  display_name: Kotak Flexicap Fund – Direct Growth
+  source_url: https://www.indmoney.com/mutual-funds/kotak-flexicap-fund-direct-growth
+  status: success
+  http_status: 200
+  content_hash: 05695d39580b7661db52e90a55df756ade98d9bf6719d8e3f565ce06570f4c74
+  content_bytes: 367433
+  fetched_at: '2026-08-27T09:13:37+00:00'
+  html_path: data/raw/kotak_flexicap_direct_growth.html
+  error: null
+  hash_changed: true
+- scheme_id: kotak_liquid_growth_direct
+  doc_id: kotak_liquid_growth_direct
+  display_name: Kotak Liquid Fund – Growth Direct
+  source_url: https://www.indmoney.com/mutual-funds/kotak-liquid-fund-growth-direct
+  status: success
+  http_status: 200
+  content_hash: 2a7137bbd032c75e3c7b85dc371e793e2cd2a0fcaf30fa2b0a0cd021c8409624
+  content_bytes: 310712
+  fetched_at: '2026-08-27T09:13:37+00:00'
+  html_path: data/raw/kotak_liquid_growth_direct.html
+  error: null
+  hash_changed: true
+runs:
+- run_id: 2026-08-27T090903Z0000
+  started_at: '2026-08-27T09:09:03+00:00'
+  finished_at: '2026-08-27T09:09:04+00:00'
+  overall_status: success
+  schemes:
+  - scheme_id: kotak_large_cap_direct_growth
+    doc_id: kotak_large_cap_direct_growth
+    display_name: Kotak Large Cap Fund – Direct Growth
+    source_url: https://www.indmoney.com/mutual-funds/kotak-large-cap-fund-direct-growth
+    status: success
+    http_status: 200
+    content_hash: d25059a31dcb9f687cb558580842747586213ee713ca5b4cde902efb41a2cb97
+    content_bytes: 368095
+    fetched_at: '2026-08-27T09:09:03+00:00'
+    html_path: data/raw/kotak_large_cap_direct_growth.html
+    error: null
+    hash_changed: true
+  - scheme_id: kotak_midcap_direct_growth
+    doc_id: kotak_midcap_direct_growth
+    display_name: Kotak Midcap Fund – Direct Growth
+    source_url: https://www.indmoney.com/mutual-funds/kotak-midcap-fund-direct-growth
+    status: success
+    http_status: 200
+    content_hash: 72dc47131a544a3085d365525e626f239a98a252051e3c91d0011029fc0986e3
+    content_bytes: 374939
+    fetched_at: '2026-08-27T09:09:03+00:00'
+    html_path: data/raw/kotak_midcap_direct_growth.html
+    error: null
+    hash_changed: true
+  - scheme_id: kotak_arbitrage_direct_growth
+    doc_id: kotak_arbitrage_direct_growth
+    display_name: Kotak Arbitrage Fund – Direct Growth
+    source_url: https://www.indmoney.com/mutual-funds/kotak-arbitrage-fund-direct-growth
+    status: success
+    http_status: 200
+    content_hash: 6f104ee880c34a3a056fec3b1f90dff30ee8f9c88a8afa1bf579c25d99fc4422
+    content_bytes: 424811
+    fetched_at: '2026-08-27T09:09:03+00:00'
+    html_path: data/raw/kotak_arbitrage_direct_growth.html
+    error: null
+    hash_changed: true
+  - scheme_id: kotak_savings_direct_growth
+    doc_id: kotak_savings_direct_growth
+    display_name: Kotak Savings Fund – Direct Growth
+    source_url: https://www.indmoney.com/mutual-funds/kotak-savings-fund-direct-growth
+    status: success
+    http_status: 200
+    content_hash: 5100c860b0324b6a96079d1af32e28dd3eee1e5710431f905b20af419774d95e
+    content_bytes: 308290
+    fetched_at: '2026-08-27T09:09:04+00:00'
+    html_path: data/raw/kotak_savings_direct_growth.html
+    error: null
+    hash_changed: true
+  - scheme_id: kotak_gold_growth_direct
+    doc_id: kotak_gold_growth_direct
+    display_name: Kotak Gold Fund – Growth Direct
+    source_url: https://www.indmoney.com/mutual-funds/kotak-gold-fund-growth-direct
+    status: success
+    http_status: 200
+    content_hash: d7853a39fca9b1240d0665ce62baffe79b082025f9c48b694072eecbf38fa5b4
+    content_bytes: 295607
+    fetched_at: '2026-08-27T09:09:04+00:00'
+    html_path: data/raw/kotak_gold_growth_direct.html
+    error: null
+    hash_changed: true
+- run_id: 2026-08-27T090905Z0000
+  started_at: '2026-08-27T09:09:05+00:00'
+  finished_at: '2026-08-27T09:09:05+00:00'
+  overall_status: success
+  schemes:
+  - scheme_id: kotak_large_cap_direct_growth
+    doc_id: kotak_large_cap_direct_growth
+    display_name: Kotak Large Cap Fund – Direct Growth
+    source_url: https://www.indmoney.com/mutual-funds/kotak-large-cap-fund-direct-growth
+    status: success
+    http_status: null
+    content_hash: d25059a31dcb9f687cb558580842747586213ee713ca5b4cde902efb41a2cb97
+    content_bytes: 368095
+    fetched_at: '2026-08-27T09:09:05+00:00'
+    html_path: data/raw/kotak_large_cap_direct_growth.html
+    error: null
+    hash_changed: false
+  - scheme_id: kotak_midcap_direct_growth
+    doc_id: kotak_midcap_direct_growth
+    display_name: Kotak Midcap Fund – Direct Growth
+    source_url: https://www.indmoney.com/mutual-funds/kotak-midcap-fund-direct-growth
+    status: success
+    http_status: null
+    content_hash: 72dc47131a544a3085d365525e626f239a98a252051e3c91d0011029fc0986e3
+    content_bytes: 374939
+    fetched_at: '2026-08-27T09:09:05+00:00'
+    html_path: data/raw/kotak_midcap_direct_growth.html
+    error: null
+    hash_changed: false
+  - scheme_id: kotak_arbitrage_direct_growth
+    doc_id: kotak_arbitrage_direct_growth
+    display_name: Kotak Arbitrage Fund – Direct Growth
+    source_url: https://www.indmoney.com/mutual-funds/kotak-arbitrage-fund-direct-growth
+    status: success
+    http_status: null
+    content_hash: 6f104ee880c34a3a056fec3b1f90dff30ee8f9c88a8afa1bf579c25d99fc4422
+    content_bytes: 424811
+    fetched_at: '2026-08-27T09:09:05+00:00'
+    html_path: data/raw/kotak_arbitrage_direct_growth.html
+    error: null
+    hash_changed: false
+  - scheme_id: kotak_savings_direct_growth
+    doc_id: kotak_savings_direct_growth
+    display_name: Kotak Savings Fund – Direct Growth
+    source_url: https://www.indmoney.com/mutual-funds/kotak-savings-fund-direct-growth
+    status: success
+    http_status: null
+    content_hash: 5100c860b0324b6a96079d1af32e28dd3eee1e5710431f905b20af419774d95e
+    content_bytes: 308290
+    fetched_at: '2026-08-27T09:09:05+00:00'
+    html_path: data/raw/kotak_savings_direct_growth.html
+    error: null
+    hash_changed: false
+  - scheme_id: kotak_gold_growth_direct
+    doc_id: kotak_gold_growth_direct
+    display_name: Kotak Gold Fund – Growth Direct
+    source_url: https://www.indmoney.com/mutual-funds/kotak-gold-fund-growth-direct
+    status: success
+    http_status: null
+    content_hash: d7853a39fca9b1240d0665ce62baffe79b082025f9c48b694072eecbf38fa5b4
+    content_bytes: 295607
+    fetched_at: '2026-08-27T09:09:05+00:00'
+    html_path: data/raw/kotak_gold_growth_direct.html
+    error: null
+    hash_changed: false
+- run_id: 2026-08-27T090918Z0000
+  started_at: '2026-08-27T09:09:18+00:00'
+  finished_at: '2026-08-27T09:09:19+00:00'
+  overall_status: success
+  schemes:
+  - scheme_id: kotak_large_cap_direct_growth
+    doc_id: kotak_large_cap_direct_growth
+    display_name: Kotak Large Cap Fund – Direct Growth
+    source_url: https://www.indmoney.com/mutual-funds/kotak-large-cap-fund-direct-growth
+    status: success
+    http_status: null
+    content_hash: d25059a31dcb9f687cb558580842747586213ee713ca5b4cde902efb41a2cb97
+    content_bytes: 368095
+    fetched_at: '2026-08-27T09:09:18+00:00'
+    html_path: data/raw/kotak_large_cap_direct_growth.html
+    error: null
+    hash_changed: false
+  - scheme_id: kotak_midcap_direct_growth
+    doc_id: kotak_midcap_direct_growth
+    display_name: Kotak Midcap Fund – Direct Growth
+    source_url: https://www.indmoney.com/mutual-funds/kotak-midcap-fund-direct-growth
+    status: success
+    http_status: null
+    content_hash: 72dc47131a544a3085d365525e626f239a98a252051e3c91d0011029fc0986e3
+    content_bytes: 374939
+    fetched_at: '2026-08-27T09:09:19+00:00'
+    html_path: data/raw/kotak_midcap_direct_growth.html
+    error: null
+    hash_changed: false
+  - scheme_id: kotak_arbitrage_direct_growth
+    doc_id: kotak_arbitrage_direct_growth
+    display_name: Kotak Arbitrage Fund – Direct Growth
+    source_url: https://www.indmoney.com/mutual-funds/kotak-arbitrage-fund-direct-growth
+    status: success
+    http_status: null
+    content_hash: 6f104ee880c34a3a056fec3b1f90dff30ee8f9c88a8afa1bf579c25d99fc4422
+    content_bytes: 424811
+    fetched_at: '2026-08-27T09:09:19+00:00'
+    html_path: data/raw/kotak_arbitrage_direct_growth.html
+    error: null
+    hash_changed: false
+  - scheme_id: kotak_savings_direct_growth
+    doc_id: kotak_savings_direct_growth
+    display_name: Kotak Savings Fund – Direct Growth
+    source_url: https://www.indmoney.com/mutual-funds/kotak-savings-fund-direct-growth
+    status: success
+    http_status: null
+    content_hash: 5100c860b0324b6a96079d1af32e28dd3eee1e5710431f905b20af419774d95e
+    content_bytes: 308290
+    fetched_at: '2026-08-27T09:09:19+00:00'
+    html_path: data/raw/kotak_savings_direct_growth.html
+    error: null
+    hash_changed: false
+  - scheme_id: kotak_gold_growth_direct
+    doc_id: kotak_gold_growth_direct
+    display_name: Kotak Gold Fund – Growth Direct
+    source_url: https://www.indmoney.com/mutual-funds/kotak-gold-fund-growth-direct
+    status: success
+    http_status: null
+    content_hash: d7853a39fca9b1240d0665ce62baffe79b082025f9c48b694072eecbf38fa5b4
+    content_bytes: 295607
+    fetched_at: '2026-08-27T09:09:19+00:00'
+    html_path: data/raw/kotak_gold_growth_direct.html
+    error: null
+    hash_changed: false
+- run_id: 2026-08-27T091336Z0000
+  started_at: '2026-08-27T09:13:36+00:00'
+  finished_at: '2026-08-27T09:13:37+00:00'
+  overall_status: success
+  schemes:
+  - scheme_id: kotak_flexicap_direct_growth
+    doc_id: kotak_flexicap_direct_growth
+    display_name: Kotak Flexicap Fund – Direct Growth
+    source_url: https://www.indmoney.com/mutual-funds/kotak-flexicap-fund-direct-growth
+    status: success
+    http_status: 200
+    content_hash: 05695d39580b7661db52e90a55df756ade98d9bf6719d8e3f565ce06570f4c74
+    content_bytes: 367433
+    fetched_at: '2026-08-27T09:13:37+00:00'
+    html_path: data/raw/kotak_flexicap_direct_growth.html
+    error: null
+    hash_changed: true
+  - scheme_id: kotak_liquid_growth_direct
+    doc_id: kotak_liquid_growth_direct
+    display_name: Kotak Liquid Fund – Growth Direct
+    source_url: https://www.indmoney.com/mutual-funds/kotak-liquid-fund-growth-direct
+    status: success
+    http_status: 200
+    content_hash: 2a7137bbd032c75e3c7b85dc371e793e2cd2a0fcaf30fa2b0a0cd021c8409624
+    content_bytes: 310712
+    fetched_at: '2026-08-27T09:13:37+00:00'
+    html_path: data/raw/kotak_liquid_growth_direct.html
+    error: null
+    hash_changed: true

@@ -1,0 +1,41 @@
+# Secrets & local env
+.env
+.env.local
+*.pem
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+.envrc
+
+# Tooling / IDE
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Vector store — committed so daily GitHub Actions refresh is available on clone.
+# Rebuilt by: python -m src.ingest.run (or the daily-ingest workflow).
+# data/vectorstore/
+*.faiss
+*.index
+
+# Raw HTML may be large; keep .gitkeep only by default
+# Uncomment to ignore fetched pages if not committing them:
+# data/raw/*
+# !data/raw/.gitkeep

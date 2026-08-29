@@ -1,0 +1,40 @@
+# All scheme Reference URLs from docs/problemStatement.md (verbatim).
+# Keep in sync with data/manifest.yaml and structured_facts.yaml.
+
+version: 1
+source: docs/problemStatement.md
+schemes:
+  - scheme_id: kotak_large_cap_direct_growth
+    display_name: "Kotak Large Cap Fund – Direct Growth"
+    category: Large-cap
+    source_url: https://www.indmoney.com/mutual-funds/kotak-large-cap-fund-direct-growth
+
+  - scheme_id: kotak_midcap_direct_growth
+    display_name: "Kotak Midcap Fund – Direct Growth"
+    category: Mid-cap
+    source_url: https://www.indmoney.com/mutual-funds/kotak-midcap-fund-direct-growth
+
+  - scheme_id: kotak_arbitrage_direct_growth
+    display_name: "Kotak Arbitrage Fund – Direct Growth"
+    category: Arbitrage
+    source_url: https://www.indmoney.com/mutual-funds/kotak-arbitrage-fund-direct-growth
+
+  - scheme_id: kotak_savings_direct_growth
+    display_name: "Kotak Savings Fund – Direct Growth"
+    category: Debt / savings
+    source_url: https://www.indmoney.com/mutual-funds/kotak-savings-fund-direct-growth
+
+  - scheme_id: kotak_gold_growth_direct
+    display_name: "Kotak Gold Fund – Growth Direct"
+    category: Commodity / gold
+    source_url: https://www.indmoney.com/mutual-funds/kotak-gold-fund-growth-direct
+
+  - scheme_id: kotak_flexicap_direct_growth
+    display_name: "Kotak Flexicap Fund – Direct Growth"
+    category: Flexi-cap
+    source_url: https://www.indmoney.com/mutual-funds/kotak-flexicap-fund-direct-growth
+
+  - scheme_id: kotak_liquid_growth_direct
+    display_name: "Kotak Liquid Fund – Growth Direct"
+    category: Liquid
+    source_url: https://www.indmoney.com/mutual-funds/kotak-liquid-fund-growth-direct

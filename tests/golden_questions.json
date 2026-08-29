@@ -1,0 +1,61 @@
+[
+  {
+    "id": "large_cap_expense",
+    "message": "What is the expense ratio of Kotak Large Cap Fund?",
+    "scheme_id": "kotak_large_cap_direct_growth",
+    "expected_type": "answer",
+    "expect_facet": "expense_ratio"
+  },
+  {
+    "id": "arbitrage_exit_load",
+    "message": "What is the exit load for Kotak Arbitrage Fund?",
+    "scheme_id": "kotak_arbitrage_direct_growth",
+    "expected_type": "answer",
+    "expect_facet": "exit_load"
+  },
+  {
+    "id": "liquid_min_sip",
+    "message": "What is the minimum SIP for Kotak Liquid Fund?",
+    "scheme_id": "kotak_liquid_growth_direct",
+    "expected_type": "answer",
+    "expect_facet": "min_sip"
+  },
+  {
+    "id": "midcap_riskometer",
+    "message": "What is the riskometer for Kotak Midcap Fund?",
+    "scheme_id": "kotak_midcap_direct_growth",
+    "expected_type": "answer",
+    "expect_facet": "riskometer"
+  },
+  {
+    "id": "gold_benchmark",
+    "message": "What is the benchmark for Kotak Gold Fund?",
+    "scheme_id": "kotak_gold_growth_direct",
+    "expected_type": "answer",
+    "expect_facet": "benchmark"
+  },
+  {
+    "id": "arbitrage_nav",
+    "message": "What is the current NAV of Kotak Arbitrage Fund?",
+    "scheme_id": "kotak_arbitrage_direct_growth",
+    "expected_type": "answer",
+    "expect_facet": "nav"
+  },
+  {
+    "id": "statement_miss",
+    "message": "How do I download my capital gains statement for Kotak Flexicap Fund?",
+    "scheme_id": "kotak_flexicap_direct_growth",
+    "expected_type": "miss"
+  },
+  {
+    "id": "performance_refusal",
+    "message": "What was the 3 year return on Kotak Savings Fund?",
+    "scheme_id": "kotak_savings_direct_growth",
+    "expected_type": "performance_refusal"
+  },
+  {
+    "id": "unsupported_scheme",
+    "message": "What is the expense ratio of HDFC Top 100 Fund?",
+    "expected_type": "unsupported"
+  }
+]

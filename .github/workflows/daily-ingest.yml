@@ -34,6 +34,7 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -93,26 +94,70 @@ jobs:
         run: python -u scripts/retrieval_probe.py
 
       - name: Commit refreshed corpus
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/raw data/processed data/vectorstore
-          if git diff --staged --quiet; then
-            echo "No corpus changes to commit."
+
+          sync_to_origin_main() {
+            git fetch origin main
+            # Re-attach to latest main while keeping ingest edits in the working tree.
+            git checkout -B main origin/main
+          }
+
+          commit_corpus_if_changed() {
+            git add data/raw data/processed data/vectorstore
+            if git diff --staged --quiet; then
+              echo "No corpus changes to commit."
+              return 1
+            fi
+            git commit -m "chore(ingest): daily corpus refresh $(date -u +%Y-%m-%d)"
+            return 0
+          }
+
+          push_with_retry() {
+            local attempt
+            for attempt in 1 2 3 4 5 6 7 8 9 10; do
+              echo "Push attempt ${attempt}/10: syncing with origin/main..."
+              git fetch origin main
+
+              if ! git rebase origin/main; then
+                echo "Rebase conflict on data/ — rebuilding corpus commit on latest main."
+                git rebase --abort || true
+                sync_to_origin_main
+                if ! commit_corpus_if_changed; then
+                  echo "Remote already has equivalent corpus state after sync."
+                  return 0
+                fi
+              fi
+
+              if git push origin main; then
+                echo "Corpus push succeeded on attempt ${attempt}."
+                return 0
+              fi
+
+              echo "Push rejected; retrying after sync..."
+              sync_to_origin_main
+              if ! commit_corpus_if_changed; then
+                echo "No diff after sync — treating as idempotent success."
+                return 0
+              fi
+              sleep $((attempt * 2))
+            done
+            return 1
+          }
+
+          # Start from latest main, then layer today's ingest artifacts on top.
+          sync_to_origin_main
+          if ! commit_corpus_if_changed; then
             exit 0
           fi
-          git commit -m "chore(ingest): daily corpus refresh $(date -u +%Y-%m-%d)"
-          # Ingest can take several minutes; rebase onto latest main before push.
-          for attempt in 1 2 3 4 5; do
-            echo "Push attempt ${attempt}/5: rebasing onto origin/main..."
-            git pull --rebase origin main
-            if git push origin HEAD:main; then
-              echo "Corpus push succeeded on attempt ${attempt}."
-              exit 0
-            fi
-            echo "Push rejected; waiting before retry..."
-            sleep $((attempt * 3))
-          done
-          echo "Failed to push corpus commit after 5 attempts."
+
+          if push_with_retry; then
+            exit 0
+          fi
+
+          echo "Failed to push corpus commit after 10 attempts."
           exit 1

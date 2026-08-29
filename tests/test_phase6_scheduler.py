@@ -33,14 +33,15 @@ def test_daily_ingest_workflow_runs_full_pipeline() -> None:
     text = WORKFLOW_PATH.read_text(encoding="utf-8")
     assert "python -u -m src.ingest.run" in text
     assert "--fetch-fallback-cached" in text
-    assert "python scripts/retrieval_probe.py" in text
+    assert "python -u scripts/retrieval_probe.py" in text
     assert "GROQ_API_KEY" not in text
 
 
 def test_daily_ingest_workflow_rebases_before_push() -> None:
     text = WORKFLOW_PATH.read_text(encoding="utf-8")
-    assert "git pull --rebase origin main" in text
-    assert "git push origin HEAD:main" in text
+    assert "sync_to_origin_main" in text
+    assert "push_with_retry" in text
+    assert "git push origin main" in text
 
 
 def test_vectorstore_not_gitignored() -> None:

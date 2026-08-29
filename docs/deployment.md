@@ -180,11 +180,13 @@ Copy from [`vercel.env.example`](../vercel.env.example) into **Vercel → Settin
 
 | Variable | Required | Value |
 | --- | --- | --- |
-| `VITE_API_BASE_URL` | **Yes** | Railway public URL from Phase 1.5 **without** trailing slash, e.g. `https://rag-mf-api-production.up.railway.app` |
+| `VITE_API_BASE_URL` | **Yes** | Railway public URL from Phase 1.5 **without** trailing slash |
 
-Set for **Production** (and Preview if you want preview deployments to hit the same API).
+(`RAILWAY_API_URL` works as an alias during the Vercel build.)
 
-> Vite embeds `VITE_*` variables at **build time**. Changing the API URL requires a **redeploy**.
+The build script [`scripts/prepare_vercel_build.mjs`](../scripts/prepare_vercel_build.mjs) uses this URL to configure a **same-origin `/api` proxy** on Vercel → Railway. The browser never calls Railway directly, so CORS is not required for chat (you still need Railway running with `GROQ_API_KEY`).
+
+> **Important:** `VITE_*` vars are read at **build time** on Vercel. After changing them, click **Redeploy**. A missing URL fails the build with a clear error instead of shipping a broken UI.
 
 Local production build test (optional):
 
@@ -290,6 +292,7 @@ See [`runbook.md`](./runbook.md) for ingest failure handling.
 | Symptom | Likely cause | Fix |
 | --- | --- | --- |
 | `No FastAPI entrypoint found` on Vercel | Vercel auto-detected Python backend at repo root | Use root [`vercel.json`](../vercel.json) (`framework: null`, builds `ui/`) or set Root Directory to `ui/` |
+| Chat shows “Could not reach the API” | `VITE_API_BASE_URL` missing at Vercel build | Set to Railway URL in Vercel env vars → **Redeploy** (build fails if unset) |
 | `503 GROQ_API_KEY is not configured` | Missing secret on Railway | Set `GROQ_API_KEY` and redeploy (Phase 1.3) |
 | CORS error in browser | `CORS_ORIGINS` mismatch | Add exact Vercel URL to Railway `CORS_ORIGINS` |
 | `vector_count: 0` / degraded health | Chroma path wrong or empty deploy | Confirm `VECTOR_STORE_PATH=data/vectorstore` and `data/vectorstore/` exists in repo |

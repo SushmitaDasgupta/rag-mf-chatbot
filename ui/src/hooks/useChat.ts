@@ -105,13 +105,15 @@ export function useChat() {
         ]);
         return true;
       } catch {
+        const hint = import.meta.env.PROD
+          ? "Could not reach the API. In Vercel, set VITE_API_BASE_URL to your Railway URL and redeploy."
+          : "Could not reach the API. Start the backend with: uvicorn src.api.main:app --reload";
         setMessages((prev) => [
           ...prev,
           {
             id: newId(),
             role: "assistant",
-            content:
-              "Could not reach the API. Start the backend with: uvicorn src.api.main:app --reload",
+            content: hint,
             isError: true,
           },
         ]);

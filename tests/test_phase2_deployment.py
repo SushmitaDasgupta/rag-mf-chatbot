@@ -14,10 +14,17 @@ def test_phase2_root_vercel_json_builds_ui() -> None:
     path = REPO_ROOT / "vercel.json"
     data = json.loads(path.read_text(encoding="utf-8"))
     assert data.get("framework") is None
+    assert "prepare_vercel_build.mjs" in data["buildCommand"]
     assert "ui" in data["buildCommand"]
     assert data["outputDirectory"] == "ui/dist"
-    rewrites = data["rewrites"]
-    assert any(r.get("destination") == "/index.html" for r in rewrites)
+
+
+def test_phase2_prepare_vercel_build_script() -> None:
+    path = REPO_ROOT / "scripts" / "prepare_vercel_build.mjs"
+    text = path.read_text(encoding="utf-8")
+    assert "VITE_API_BASE_URL" in text
+    assert "RAILWAY_API_URL" in text
+    assert "/api/:path*" in text
 
 
 def test_phase2_vercel_json() -> None:

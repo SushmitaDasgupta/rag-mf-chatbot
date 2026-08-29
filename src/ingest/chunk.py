@@ -22,6 +22,9 @@ import yaml
 from src.config import REPO_ROOT, get_settings
 from src.guardrails.citations import is_allowed_citation
 from src.ingest.fetch import load_manifest_schemes
+from src.logging_config import get_logger, setup_logging
+
+logger = get_logger(__name__)
 
 # Revised corpus defaults (implementation.md Phase 1.3)
 HARD_MAX_TOKENS = 512
@@ -751,36 +754,39 @@ def run_chunk(
 
     started_at = _utc_now_iso()
     run_id = started_at.replace(":", "").replace("+", "Z")
+    logger.info("Chunk run %s | schemes=%d", run_id, len(schemes))
     results: list[SchemeChunkResult] = []
     chunks_by_scheme: dict[str, list[Chunk]] = {}
 
-    for scheme in schemes:
+    for index, scheme in enumerate(schemes):
         scheme_id = str(scheme["scheme_id"])
+        step = f"[{index + 1}/{len(schemes)}]"
         # Fail closed on manifest URL before reading parse artifact
         url = str(scheme.get("source_url") or "")
         if not is_allowed_citation(url):
-            results.append(
-                SchemeChunkResult(
-                    scheme_id=scheme_id,
-                    source_url=url,
-                    status="failed",
-                    error=f"source_url not allowlisted: {url}",
-                )
+            result = SchemeChunkResult(
+                scheme_id=scheme_id,
+                source_url=url,
+                status="failed",
+                error=f"source_url not allowlisted: {url}",
             )
+            results.append(result)
+            logger.error("%s %s FAILED | %s", step, scheme_id, result.error)
             continue
 
         parsed_path = parsed / f"{scheme_id}.json"
         if not parsed_path.exists():
-            results.append(
-                SchemeChunkResult(
-                    scheme_id=scheme_id,
-                    source_url=url,
-                    status="failed",
-                    error=f"Missing parsed artifact: {parsed_path}",
-                )
+            result = SchemeChunkResult(
+                scheme_id=scheme_id,
+                source_url=url,
+                status="failed",
+                error=f"Missing parsed artifact: {parsed_path}",
             )
+            results.append(result)
+            logger.error("%s %s FAILED | %s", step, scheme_id, result.error)
             continue
 
+        logger.info("%s Chunking parsed JSON for %s", step, scheme_id)
         result, chunks = chunk_scheme_file(
             parsed_path,
             chunks_dir=out,
@@ -790,6 +796,17 @@ def run_chunk(
         results.append(result)
         if chunks:
             chunks_by_scheme[scheme_id] = chunks
+        if result.status == "success":
+            logger.info(
+                "%s %s OK | chunks=%d | max_tok=%s | facets=%s",
+                step,
+                scheme_id,
+                result.chunk_count,
+                result.max_token_estimate,
+                result.facets_present,
+            )
+        else:
+            logger.error("%s %s FAILED | %s", step, scheme_id, result.error)
 
     finished_at = _utc_now_iso()
     overall = (
@@ -807,11 +824,25 @@ def run_chunk(
     out.mkdir(parents=True, exist_ok=True)
     write_chunk_log(summary, out / "chunk_log.yaml")
     write_qc_notes(results, chunks_by_scheme, out / "CHUNK_QC.md")
+    _log_chunk_summary(summary)
     return summary
 
 
+def _log_chunk_summary(summary: ChunkRunSummary) -> None:
+    ok = sum(1 for r in summary.schemes if r.status == "success")
+    total_chunks = sum(r.chunk_count for r in summary.schemes if r.status == "success")
+    logger.info(
+        "Chunk summary | status=%s | ok=%d/%d | total_chunks=%d | run_id=%s",
+        summary.overall_status,
+        ok,
+        len(summary.schemes),
+        total_chunks,
+        summary.run_id,
+    )
+
+
 def _print_summary(summary: ChunkRunSummary) -> None:
-    print(f"Chunk run {summary.run_id}: {summary.overall_status}")
+    _log_chunk_summary(summary)
     for r in summary.schemes:
         flag = "OK" if r.status == "success" else "FAIL"
         detail = (
@@ -833,6 +864,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--structured-facts", default=None)
     parser.add_argument("--scheme-id", action="append", dest="scheme_ids", default=None)
     args = parser.parse_args(argv)
+    setup_logging(get_settings().log_level)
 
     try:
         summary = run_chunk(

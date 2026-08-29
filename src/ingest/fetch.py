@@ -22,6 +22,9 @@ import yaml
 
 from src.config import REPO_ROOT, get_settings
 from src.guardrails.citations import is_allowed_citation
+from src.logging_config import get_logger, setup_logging
+
+logger = get_logger(__name__)
 
 DEFAULT_USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
@@ -444,6 +447,17 @@ def run_fetch(
     run_id = started_at.replace(":", "").replace("+", "Z")
     results: list[SchemeFetchResult] = []
 
+    mode = "verify-only" if verify_only else "network"
+    if fallback_to_cached and not verify_only:
+        mode = "network+cached-fallback"
+    logger.info(
+        "Fetch run %s | schemes=%d | mode=%s | retries=%d",
+        run_id,
+        len(schemes),
+        mode,
+        retry_count,
+    )
+
     owns_client = client is None and not verify_only
     http = client
     if owns_client:
@@ -457,23 +471,24 @@ def run_fetch(
         for index, scheme in enumerate(schemes):
             scheme_id = str(scheme["scheme_id"])
             prev = _previous_hash(log_path, scheme_id)
+            step = f"[{index + 1}/{len(schemes)}]"
             if verify_only:
-                results.append(
-                    verify_existing_raw(scheme, raw_dir=raw, previous_hash=prev)
-                )
+                logger.info("%s Verifying cached raw HTML for %s", step, scheme_id)
+                result = verify_existing_raw(scheme, raw_dir=raw, previous_hash=prev)
             else:
+                logger.info("%s Fetching %s from allowlisted URL", step, scheme_id)
                 assert http is not None
-                results.append(
-                    fetch_scheme_with_fallback(
-                        scheme,
-                        raw_dir=raw,
-                        timeout_seconds=timeout_seconds,
-                        client=http,
-                        previous_hash=prev,
-                        retry_count=retry_count,
-                        fallback_to_cached=fallback_to_cached,
-                    )
+                result = fetch_scheme_with_fallback(
+                    scheme,
+                    raw_dir=raw,
+                    timeout_seconds=timeout_seconds,
+                    client=http,
+                    previous_hash=prev,
+                    retry_count=retry_count,
+                    fallback_to_cached=fallback_to_cached,
                 )
+            results.append(result)
+            _log_scheme_result(step, result)
             if (
                 not verify_only
                 and inter_scheme_delay_seconds > 0
@@ -494,11 +509,45 @@ def run_fetch(
         schemes=results,
     )
     write_fetch_log(summary, log_path)
+    _log_fetch_summary(summary)
     return summary
 
 
+def _log_scheme_result(step: str, result: SchemeFetchResult) -> None:
+    if result.status == "success":
+        hash_note = "changed" if result.hash_changed else "unchanged"
+        if result.hash_changed is None:
+            hash_note = "n/a"
+        logger.info(
+            "%s %s OK | mode=%s | http=%s | bytes=%s | hash=%s",
+            step,
+            result.scheme_id,
+            result.fetch_mode or "n/a",
+            result.http_status if result.http_status is not None else "n/a",
+            result.content_bytes if result.content_bytes is not None else "n/a",
+            hash_note,
+        )
+        if result.warning:
+            logger.warning("%s %s | %s", step, result.scheme_id, result.warning)
+    else:
+        logger.error("%s %s FAILED | %s", step, result.scheme_id, result.error)
+
+
+def _log_fetch_summary(summary: FetchRunSummary) -> None:
+    ok = sum(1 for r in summary.schemes if r.status == "success")
+    cached = sum(1 for r in summary.schemes if r.fetch_mode == "cached")
+    logger.info(
+        "Fetch summary | status=%s | ok=%d/%d | cached_fallback=%d | run_id=%s",
+        summary.overall_status,
+        ok,
+        len(summary.schemes),
+        cached,
+        summary.run_id,
+    )
+
+
 def _print_summary(summary: FetchRunSummary) -> None:
-    print(f"Fetch run {summary.run_id}: {summary.overall_status}")
+    _log_fetch_summary(summary)
     for r in summary.schemes:
         flag = "OK" if r.status == "success" else "FAIL"
         extra = r.content_hash[:12] + "…" if r.content_hash else (r.error or "")
@@ -557,6 +606,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
     settings = get_settings()
+    setup_logging(settings.log_level)
 
     try:
         summary = run_fetch(

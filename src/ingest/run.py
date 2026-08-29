@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
@@ -19,6 +20,15 @@ from src.ingest.chunk import run_chunk
 from src.ingest.fetch import run_fetch
 from src.ingest.index import IndexRunSummary, run_index
 from src.ingest.parse import run_parse
+from src.logging_config import (
+    get_logger,
+    log_pipeline_footer,
+    log_pipeline_header,
+    log_stage,
+    setup_logging,
+)
+
+logger = get_logger(__name__)
 
 
 @dataclass
@@ -64,9 +74,20 @@ def run_ingest(
     embedding_model: str | None = None,
 ) -> IngestRunSummary:
     settings = get_settings()
+    pipeline_started = time.perf_counter()
     started_at = _utc_now_iso()
     run_id = started_at.replace(":", "").replace("+", "Z")
     errors: list[str] = []
+
+    scheme_note = f"schemes={sorted(scheme_ids)}" if scheme_ids else "schemes=all"
+    log_pipeline_header(
+        logger,
+        run_id,
+        detail=(
+            f"{scheme_note} | skip_fetch={skip_fetch} verify_only={verify_only} "
+            f"skip_parse={skip_parse} skip_chunk={skip_chunk} skip_index={skip_index}"
+        ),
+    )
 
     fetch_status = "skipped"
     if not skip_fetch:
@@ -75,15 +96,20 @@ def run_ingest(
             if fetch_fallback_cached is not None
             else settings.fetch_fallback_cached
         )
-        fetch_summary = run_fetch(
-            manifest_path=manifest_path or settings.manifest_path,
-            raw_dir=raw_dir or settings.raw_dir,
-            scheme_ids=scheme_ids,
-            verify_only=verify_only,
-            fallback_to_cached=fallback,
-            retry_count=settings.fetch_retry_count,
-            inter_scheme_delay_seconds=settings.fetch_inter_scheme_delay_seconds,
-        )
+        with log_stage(
+            logger,
+            "1/4 FETCH",
+            detail=f"{scheme_note} | fallback_cached={fallback}",
+        ):
+            fetch_summary = run_fetch(
+                manifest_path=manifest_path or settings.manifest_path,
+                raw_dir=raw_dir or settings.raw_dir,
+                scheme_ids=scheme_ids,
+                verify_only=verify_only,
+                fallback_to_cached=fallback,
+                retry_count=settings.fetch_retry_count,
+                inter_scheme_delay_seconds=settings.fetch_inter_scheme_delay_seconds,
+            )
         fetch_status = fetch_summary.overall_status
         if not fetch_summary.ok:
             errors.append("fetch failed")
@@ -93,14 +119,16 @@ def run_ingest(
         if fetch_status == "failed":
             parse_status = "skipped"
             errors.append("parse skipped due to fetch failure")
+            logger.warning("Skipping parse because fetch failed")
         else:
-            parse_summary = run_parse(
-                manifest_path=manifest_path or settings.manifest_path,
-                raw_dir=raw_dir or settings.raw_dir,
-                parsed_dir=parsed_dir or settings.parsed_dir,
-                structured_facts_path=structured_facts_path or settings.structured_facts_path,
-                scheme_ids=scheme_ids,
-            )
+            with log_stage(logger, "2/4 PARSE", detail=scheme_note):
+                parse_summary = run_parse(
+                    manifest_path=manifest_path or settings.manifest_path,
+                    raw_dir=raw_dir or settings.raw_dir,
+                    parsed_dir=parsed_dir or settings.parsed_dir,
+                    structured_facts_path=structured_facts_path or settings.structured_facts_path,
+                    scheme_ids=scheme_ids,
+                )
             parse_status = parse_summary.overall_status
             if not parse_summary.ok:
                 errors.append("parse failed")
@@ -110,14 +138,16 @@ def run_ingest(
         if parse_status == "failed":
             chunk_status = "skipped"
             errors.append("chunk skipped due to parse failure")
+            logger.warning("Skipping chunk because parse failed")
         else:
-            chunk_summary = run_chunk(
-                manifest_path=manifest_path or settings.manifest_path,
-                parsed_dir=parsed_dir or settings.parsed_dir,
-                chunks_dir=chunks_dir or settings.chunks_dir,
-                structured_facts_path=structured_facts_path or settings.structured_facts_path,
-                scheme_ids=scheme_ids,
-            )
+            with log_stage(logger, "3/4 CHUNK", detail=scheme_note):
+                chunk_summary = run_chunk(
+                    manifest_path=manifest_path or settings.manifest_path,
+                    parsed_dir=parsed_dir or settings.parsed_dir,
+                    chunks_dir=chunks_dir or settings.chunks_dir,
+                    structured_facts_path=structured_facts_path or settings.structured_facts_path,
+                    scheme_ids=scheme_ids,
+                )
             chunk_status = chunk_summary.overall_status
             if not chunk_summary.ok:
                 errors.append("chunk failed")
@@ -128,18 +158,27 @@ def run_ingest(
         if chunk_status == "failed":
             index_status = "skipped"
             errors.append("index skipped due to chunk failure")
+            logger.warning("Skipping index because chunk failed")
         else:
-            index_summary = run_index(
-                manifest_path=manifest_path or settings.manifest_path,
-                chunks_dir=chunks_dir or settings.chunks_dir,
-                structured_facts_path=structured_facts_path or settings.structured_facts_path,
-                vector_store_path=vector_store_path or settings.vector_store_path,
-                collection_name=collection_name or settings.chroma_collection,
-                embedding_model=embedding_model or settings.embedding_model,
-                scheme_ids=scheme_ids,
-                run_probes=not skip_probes,
-                recreate_collection=recreate_collection,
-            )
+            with log_stage(
+                logger,
+                "4/4 INDEX",
+                detail=(
+                    f"{scheme_note} | probes={not skip_probes} "
+                    f"recreate={recreate_collection}"
+                ),
+            ):
+                index_summary = run_index(
+                    manifest_path=manifest_path or settings.manifest_path,
+                    chunks_dir=chunks_dir or settings.chunks_dir,
+                    structured_facts_path=structured_facts_path or settings.structured_facts_path,
+                    vector_store_path=vector_store_path or settings.vector_store_path,
+                    collection_name=collection_name or settings.chroma_collection,
+                    embedding_model=embedding_model or settings.embedding_model,
+                    scheme_ids=scheme_ids,
+                    run_probes=not skip_probes,
+                    recreate_collection=recreate_collection,
+                )
             index_status = index_summary.overall_status
             if not index_summary.ok:
                 errors.append("index failed")
@@ -149,7 +188,7 @@ def run_ingest(
     active = [s for s in stages if s != "skipped"]
     overall = "success" if active and all(s == "success" for s in active) and not errors else "failed"
 
-    return IngestRunSummary(
+    summary = IngestRunSummary(
         run_id=run_id,
         started_at=started_at,
         finished_at=finished_at,
@@ -162,17 +201,28 @@ def run_ingest(
         errors=errors,
     )
 
-
-def _print_summary(summary: IngestRunSummary) -> None:
-    print(f"Ingest run {summary.run_id}: {summary.overall_status}")
-    print(
-        f"  fetch={summary.fetch_status} parse={summary.parse_status} "
-        f"chunk={summary.chunk_status} index={summary.index_status}"
+    log_pipeline_footer(
+        logger,
+        run_id,
+        overall,
+        elapsed_seconds=time.perf_counter() - pipeline_started,
+        stages={
+            "fetch": fetch_status,
+            "parse": parse_status,
+            "chunk": chunk_status,
+            "index": index_status,
+        },
+        errors=errors,
     )
-    if summary.index_summary:
-        print(f"  vectors={summary.index_summary.total_vectors} probes={summary.index_summary.probe_status}")
-    for err in summary.errors:
-        print(f"  ! {err}")
+    if index_summary:
+        logger.info(
+            "Index artifacts | vectors=%d | probes=%s | collection=%s",
+            index_summary.total_vectors,
+            index_summary.probe_status,
+            index_summary.collection_name,
+        )
+
+    return summary
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -204,7 +254,15 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Delete and recreate the Chroma collection before indexing",
     )
+    parser.add_argument(
+        "--log-level",
+        default=None,
+        help="Logging level (DEBUG, INFO, WARNING; default from LOG_LEVEL env)",
+    )
     args = parser.parse_args(argv)
+
+    settings = get_settings()
+    setup_logging(args.log_level or settings.log_level)
 
     try:
         summary = run_ingest(
@@ -229,10 +287,9 @@ def main(argv: list[str] | None = None) -> int:
             embedding_model=args.embedding_model,
         )
     except Exception as exc:  # noqa: BLE001
-        print(f"Ingest aborted: {exc}", file=sys.stderr)
+        logger.exception("Ingest aborted: %s", exc)
         return 2
 
-    _print_summary(summary)
     return 0 if summary.ok else 1
 
 

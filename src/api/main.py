@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+import time
 from functools import lru_cache
 from typing import Any
 
@@ -13,7 +15,10 @@ from src.config import get_settings
 from src.guardrails.citations import assert_manifest_urls_allowlisted
 from src.guardrails.groq_limits import get_groq_rate_limiter
 from src.ingest.index import get_chroma_collection
+from src.logging_config import setup_logging
 from src.rag.chat import ChatResponse, handle_chat
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Mutual Fund FAQ Assistant",
@@ -22,6 +27,7 @@ app = FastAPI(
 )
 
 _settings = get_settings()
+setup_logging(_settings.log_level)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[o.strip() for o in _settings.cors_origins.split(",") if o.strip()],
@@ -79,7 +85,19 @@ def _collection():
 @app.on_event("startup")
 def _validate_corpus_on_startup() -> None:
     settings = get_settings()
-    assert_manifest_urls_allowlisted(settings.manifest_path)
+    urls = assert_manifest_urls_allowlisted(settings.manifest_path)
+    try:
+        count = _collection().count()
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("Vector store unavailable at startup: %s", exc)
+        count = 0
+    logger.info(
+        "API ready | schemes=%d | vectors=%d | groq_configured=%s | model=%s",
+        len(urls),
+        count,
+        bool(settings.groq_api_key),
+        settings.groq_model,
+    )
 
 
 @app.get("/api/health", response_model=HealthResponse)
@@ -133,6 +151,13 @@ def _chat_response_to_api(result: ChatResponse) -> ChatApiResponse:
 @app.post("/api/chat", response_model=ChatApiResponse)
 def chat(request: ChatRequest, response: Response) -> ChatApiResponse:
     settings = get_settings()
+    started = time.perf_counter()
+    preview = request.message.strip().replace("\n", " ")[:80]
+    logger.info(
+        "chat request | scheme_id=%s | message=%r",
+        request.scheme_id,
+        preview,
+    )
 
     try:
         result: ChatResponse = handle_chat(
@@ -142,18 +167,32 @@ def chat(request: ChatRequest, response: Response) -> ChatApiResponse:
         )
     except ValueError as exc:
         if "GROQ_API_KEY" in str(exc):
+            logger.error("chat unavailable | groq_key_missing")
             raise HTTPException(status_code=503, detail=str(exc)) from exc
+        logger.warning("chat bad request | %s", exc)
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except Exception as exc:  # noqa: BLE001
+        logger.exception("chat error | %s", exc)
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
     if result.type == "answer" and not settings.groq_api_key:
+        logger.error("chat unavailable | groq_key_missing for answer path")
         raise HTTPException(status_code=503, detail="GROQ_API_KEY is not configured")
 
     if result.type == "rate_limited":
         response.status_code = 429
         if result.retry_after_seconds is not None:
             response.headers["Retry-After"] = str(int(result.retry_after_seconds))
+
+    elapsed_ms = (time.perf_counter() - started) * 1000
+    logger.info(
+        "chat response | type=%s | scheme_id=%s | facet=%s | refusal=%s | %.0fms",
+        result.type,
+        result.scheme_id,
+        result.facet,
+        result.refusal_kind,
+        elapsed_ms,
+    )
 
     return _chat_response_to_api(result)
 

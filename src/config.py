@@ -47,6 +47,8 @@ class Settings(BaseSettings):
     fetch_retry_count: int = 3
     fetch_inter_scheme_delay_seconds: float = 1.0
 
+    log_level: str = "INFO"
+
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:

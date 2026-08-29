@@ -86,6 +86,19 @@ GitHub sends email to watchers when a scheduled workflow fails. Configure repo *
 - Schemes are fetched sequentially from `data/manifest.yaml`
 - Do not increase parallelism without reviewing source-site terms
 
+### Log readability
+
+The ingest pipeline emits structured logs:
+
+```text
+2026-08-29 14:11:39 | INFO  | src.ingest.run | STAGE START: 1/4 FETCH — schemes=all | fallback_cached=True
+2026-08-29 14:11:40 | INFO  | src.ingest.fetch | [1/7] Fetching kotak_large_cap_direct_growth from allowlisted URL
+2026-08-29 14:11:41 | INFO  | src.ingest.fetch | [1/7] kotak_large_cap_direct_growth OK | mode=cached | http=n/a | bytes=368095 | hash=unchanged
+```
+
+- Set `LOG_LEVEL=DEBUG` for more detail; `WARNING` for quieter CI output
+- GitHub Actions sets `HF_HUB_DISABLE_PROGRESS_BARS=1` to hide embedding model progress spam
+
 ### Corpus freshness
 
 After a successful scheduled run, check the latest commit message:

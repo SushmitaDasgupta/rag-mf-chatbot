@@ -17,7 +17,10 @@ if str(_REPO_ROOT) not in sys.path:
 from src.config import get_settings
 from src.ingest.fetch import load_manifest_schemes
 from src.ingest.index import get_chroma_collection
+from src.logging_config import get_logger, log_stage, setup_logging
 from src.rag.retrieve import run_core_facet_probes
+
+logger = get_logger(__name__)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -26,15 +29,21 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     settings = get_settings()
-    collection = get_chroma_collection(
-        vector_store_path=settings.vector_store_path,
-        collection_name=settings.chroma_collection,
-        embedding_model=settings.embedding_model,
-    )
-    scheme_ids = [str(s["scheme_id"]) for s in load_manifest_schemes(settings.manifest_path)]
-    probes = run_core_facet_probes(collection, scheme_ids=scheme_ids)
+    setup_logging(settings.log_level)
+
+    with log_stage(logger, "RETRIEVAL PROBES"):
+        logger.info("Loading collection %s from %s", settings.chroma_collection, settings.vector_store_path)
+        collection = get_chroma_collection(
+            vector_store_path=settings.vector_store_path,
+            collection_name=settings.chroma_collection,
+            embedding_model=settings.embedding_model,
+        )
+        scheme_ids = [str(s["scheme_id"]) for s in load_manifest_schemes(settings.manifest_path)]
+        logger.info("Running %d scheme x 5 facet probes", len(scheme_ids))
+        probes = run_core_facet_probes(collection, scheme_ids=scheme_ids)
 
     passed = sum(1 for p in probes if p["status"] == "pass")
+    failed = [p for p in probes if p["status"] != "pass"]
     payload = {
         "version": 2,
         "generated_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
@@ -52,8 +61,17 @@ def main(argv: list[str] | None = None) -> int:
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(yaml.safe_dump(payload, sort_keys=False, allow_unicode=True), encoding="utf-8")
 
-    print(f"Probes: {passed}/{len(probes)} passed")
-    print(f"Log: {out}")
+    logger.info("Probe summary | passed=%d/%d | log=%s", passed, len(probes), out)
+    for probe in failed[:10]:
+        logger.warning(
+            "Probe failed | scheme=%s facet=%s status=%s",
+            probe.get("scheme_id"),
+            probe.get("facet"),
+            probe.get("status"),
+        )
+    if len(failed) > 10:
+        logger.warning("... and %d more failed probes", len(failed) - 10)
+
     return 0 if passed == len(probes) else 1
 
 

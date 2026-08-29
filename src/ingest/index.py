@@ -27,7 +27,10 @@ from src.config import REPO_ROOT, get_settings
 from src.guardrails.citations import is_allowed_citation
 from src.ingest.chunk import load_structured_facts
 from src.ingest.fetch import load_manifest_schemes
+from src.logging_config import get_logger, setup_logging
 from src.rag.embeddings import get_embedding_function
+
+logger = get_logger(__name__)
 
 CORE_FACETS = frozenset(
     {"expense_ratio", "exit_load", "min_sip", "riskometer", "benchmark"}
@@ -530,14 +533,28 @@ def run_index(
     scheme_id_list = [str(s["scheme_id"]) for s in schemes]
     started_at = _utc_now_iso()
     run_id = started_at.replace(":", "").replace("+", "Z")
+    logger.info(
+        "Index run %s | schemes=%d | model=%s | collection=%s | recreate=%s",
+        run_id,
+        len(schemes),
+        model,
+        coll_name,
+        recreate_collection,
+    )
 
     facts_report = validate_structured_facts(facts_path, scheme_ids=scheme_id_list)
+    logger.info(
+        "Structured facts validation | status=%s | schemes=%d",
+        facts_report.get("status"),
+        len(facts_report.get("schemes") or []),
+    )
     write_structured_facts_report(
         facts_report,
         facts_path.parent / "structured_facts_report.yaml",
     )
     facts = load_structured_facts(facts_path)
 
+    logger.info("Loading Chroma collection at %s", _display_path(store_path))
     chroma_collection = collection or get_chroma_collection(
         vector_store_path=store_path,
         collection_name=coll_name,
@@ -547,23 +564,25 @@ def run_index(
     )
 
     results: list[SchemeIndexResult] = []
-    for scheme in schemes:
+    for index, scheme in enumerate(schemes):
         scheme_id = str(scheme["scheme_id"])
+        step = f"[{index + 1}/{len(schemes)}]"
         doc_id = scheme_id
         url = str(scheme.get("source_url") or "")
         if not is_allowed_citation(url):
-            results.append(
-                SchemeIndexResult(
-                    scheme_id=scheme_id,
-                    doc_id=doc_id,
-                    source_url=url,
-                    status="failed",
-                    error=f"source_url not allowlisted: {url}",
-                )
+            result = SchemeIndexResult(
+                scheme_id=scheme_id,
+                doc_id=doc_id,
+                source_url=url,
+                status="failed",
+                error=f"source_url not allowlisted: {url}",
             )
+            results.append(result)
+            logger.error("%s %s FAILED | %s", step, scheme_id, result.error)
             continue
 
         try:
+            logger.info("%s Embedding and upserting chunks for %s", step, scheme_id)
             scheme_chunks = load_scheme_chunks(chunks, scheme_id)
             loaded, indexed = upsert_scheme_chunks(
                 chroma_collection,
@@ -571,30 +590,38 @@ def run_index(
                 chunks=scheme_chunks,
             )
             deduped = loaded - indexed
-            results.append(
-                SchemeIndexResult(
-                    scheme_id=scheme_id,
-                    doc_id=doc_id,
-                    source_url=url,
-                    status="success",
-                    chunks_loaded=loaded,
-                    chunks_indexed=indexed,
-                    chunks_deduped=deduped,
-                )
+            result = SchemeIndexResult(
+                scheme_id=scheme_id,
+                doc_id=doc_id,
+                source_url=url,
+                status="success",
+                chunks_loaded=loaded,
+                chunks_indexed=indexed,
+                chunks_deduped=deduped,
+            )
+            results.append(result)
+            logger.info(
+                "%s %s OK | loaded=%d indexed=%d deduped=%d",
+                step,
+                scheme_id,
+                loaded,
+                indexed,
+                deduped,
             )
         except Exception as exc:  # noqa: BLE001
-            results.append(
-                SchemeIndexResult(
-                    scheme_id=scheme_id,
-                    doc_id=doc_id,
-                    source_url=url,
-                    status="failed",
-                    error=str(exc),
-                )
+            result = SchemeIndexResult(
+                scheme_id=scheme_id,
+                doc_id=doc_id,
+                source_url=url,
+                status="failed",
+                error=str(exc),
             )
+            results.append(result)
+            logger.error("%s %s FAILED | %s", step, scheme_id, exc)
 
     probe_status = "skipped"
     if run_probes and all(r.status == "success" for r in results):
+        logger.info("Running retrieval smoke probes for %d schemes", len(scheme_id_list))
         probes = run_retrieval_probes(
             chroma_collection,
             facts=facts,
@@ -604,6 +631,13 @@ def run_index(
         write_probe_log(probes, probe_path, run_id=run_id, embedding_model=model)
         probe_status = (
             "success" if all(p.status == "pass" for p in probes) else "failed"
+        )
+        passed = sum(1 for p in probes if p.status == "pass")
+        logger.info(
+            "Retrieval probes | status=%s | passed=%d/%d",
+            probe_status,
+            passed,
+            len(probes),
         )
 
     finished_at = _utc_now_iso()
@@ -628,17 +662,26 @@ def run_index(
     )
 
     write_index_log(summary, store_path / "index_log.yaml")
+    _log_index_summary(summary)
     return summary
 
 
-def _print_summary(summary: IndexRunSummary) -> None:
-    print(f"Index run {summary.run_id}: {summary.overall_status}")
-    print(
-        f"  collection={summary.collection_name} "
-        f"vectors={summary.total_vectors} "
-        f"facts={summary.structured_facts_status} "
-        f"probes={summary.probe_status}"
+def _log_index_summary(summary: IndexRunSummary) -> None:
+    ok = sum(1 for r in summary.schemes if r.status == "success")
+    logger.info(
+        "Index summary | status=%s | ok=%d/%d | vectors=%d | facts=%s | probes=%s | run_id=%s",
+        summary.overall_status,
+        ok,
+        len(summary.schemes),
+        summary.total_vectors,
+        summary.structured_facts_status,
+        summary.probe_status,
+        summary.run_id,
     )
+
+
+def _print_summary(summary: IndexRunSummary) -> None:
+    _log_index_summary(summary)
     for r in summary.schemes:
         flag = "OK" if r.status == "success" else "FAIL"
         detail = (
@@ -668,6 +711,7 @@ def main(argv: list[str] | None = None) -> int:
         help="Delete and recreate the Chroma collection before indexing (required after embedding model change)",
     )
     args = parser.parse_args(argv)
+    setup_logging(get_settings().log_level)
 
     try:
         summary = run_index(

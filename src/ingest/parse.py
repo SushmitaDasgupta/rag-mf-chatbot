@@ -24,6 +24,9 @@ from bs4 import BeautifulSoup, NavigableString, Tag
 from src.config import REPO_ROOT, get_settings
 from src.guardrails.citations import is_allowed_citation
 from src.ingest.fetch import load_manifest_schemes
+from src.logging_config import get_logger, setup_logging
+
+logger = get_logger(__name__)
 
 STRIP_TAGS = (
     "script",
@@ -829,9 +832,27 @@ def run_parse(
 
     started_at = _utc_now_iso()
     run_id = started_at.replace(":", "").replace("+", "Z")
-    results = [
-        parse_scheme_html(scheme, raw_dir=raw, parsed_dir=parsed) for scheme in schemes
-    ]
+    logger.info("Parse run %s | schemes=%d", run_id, len(schemes))
+    results: list[SchemeParseResult] = []
+    for index, scheme in enumerate(schemes):
+        scheme_id = str(scheme["scheme_id"])
+        step = f"[{index + 1}/{len(schemes)}]"
+        logger.info("%s Parsing raw HTML for %s", step, scheme_id)
+        result = parse_scheme_html(scheme, raw_dir=raw, parsed_dir=parsed)
+        results.append(result)
+        if result.status == "success":
+            facts = result.structured_fact_candidates or {}
+            word_count = len((result.main_text or "").split())
+            logger.info(
+                "%s %s OK | sections=%d | words=%d | expense_ratio=%s",
+                step,
+                scheme_id,
+                len(result.sections),
+                word_count,
+                facts.get("expense_ratio"),
+            )
+        else:
+            logger.error("%s %s FAILED | %s", step, scheme_id, result.error)
     finished_at = _utc_now_iso()
     overall = (
         "success"
@@ -849,11 +870,23 @@ def run_parse(
     update_structured_facts(results, facts_path)
     write_parse_log(summary, parsed / "parse_log.yaml")
     write_spot_check_notes(results, parsed / "SPOT_CHECK.md")
+    _log_parse_summary(summary)
     return summary
 
 
+def _log_parse_summary(summary: ParseRunSummary) -> None:
+    ok = sum(1 for r in summary.schemes if r.status == "success")
+    logger.info(
+        "Parse summary | status=%s | ok=%d/%d | run_id=%s",
+        summary.overall_status,
+        ok,
+        len(summary.schemes),
+        summary.run_id,
+    )
+
+
 def _print_summary(summary: ParseRunSummary) -> None:
-    print(f"Parse run {summary.run_id}: {summary.overall_status}")
+    _log_parse_summary(summary)
     for r in summary.schemes:
         flag = "OK" if r.status == "success" else "FAIL"
         detail = r.artifact_path or r.error or ""
@@ -872,6 +905,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--structured-facts", default=None)
     parser.add_argument("--scheme-id", action="append", dest="scheme_ids", default=None)
     args = parser.parse_args(argv)
+    setup_logging(get_settings().log_level)
 
     try:
         summary = run_parse(

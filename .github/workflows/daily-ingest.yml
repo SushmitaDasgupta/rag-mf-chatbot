@@ -66,6 +66,9 @@ jobs:
           FETCH_RETRY_COUNT: "3"
           FETCH_INTER_SCHEME_DELAY_SECONDS: "1.5"
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          LOG_LEVEL: INFO
+          HF_HUB_DISABLE_PROGRESS_BARS: "1"
+          TRANSFORMERS_VERBOSITY: error
         run: |
           set -euo pipefail
           ARGS=(--fetch-fallback-cached)

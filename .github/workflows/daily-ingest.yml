@@ -62,9 +62,13 @@ jobs:
           PARSED_DIR: data/processed/parsed
           CHUNKS_DIR: data/processed/chunks
           STRUCTURED_FACTS_PATH: data/processed/structured_facts.yaml
+          FETCH_FALLBACK_CACHED: "true"
+          FETCH_RETRY_COUNT: "3"
+          FETCH_INTER_SCHEME_DELAY_SECONDS: "1.5"
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           set -euo pipefail
-          ARGS=()
+          ARGS=(--fetch-fallback-cached)
           if [ -n "${{ inputs.scheme_id }}" ]; then
             ARGS+=(--scheme-id "${{ inputs.scheme_id }}")
           fi

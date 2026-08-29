@@ -32,6 +32,7 @@ def test_daily_ingest_workflow_has_manual_dispatch_and_concurrency() -> None:
 def test_daily_ingest_workflow_runs_full_pipeline() -> None:
     text = WORKFLOW_PATH.read_text(encoding="utf-8")
     assert "python -m src.ingest.run" in text
+    assert "--fetch-fallback-cached" in text
     assert "python scripts/retrieval_probe.py" in text
     assert "GROQ_API_KEY" not in text
 

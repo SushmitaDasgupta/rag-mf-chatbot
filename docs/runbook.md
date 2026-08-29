@@ -69,7 +69,7 @@ The corpus is refreshed automatically **every day at 10:00 AM IST** (04:30 UTC) 
 
 | Symptom | Likely cause | Action |
 | --- | --- | --- |
-| Workflow fails at fetch | 403, timeout, or empty body from source | Check `data/raw/fetch_log.yaml` in the run logs; retry manually; do **not** bypass the URL allowlist |
+| Workflow fails at fetch | 403, timeout, or empty body from source | Check `data/raw/fetch_log.yaml` in the run logs; scheduler uses `--fetch-fallback-cached` to reuse committed raw HTML when indmoney blocks GitHub runner IPs |
 | Workflow fails at probes | Index/chunk regression | Inspect `retrieval_probe_log.yaml` artifact in workspace; fix ingest locally, then re-run |
 | Workflow succeeds, no commit | Source pages unchanged (idempotent) | Expected — corpus hashes are stable |
 | Schedule not running | Forked repo | Scheduled workflows are disabled on forks; use the upstream repo |

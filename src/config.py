@@ -43,6 +43,10 @@ class Settings(BaseSettings):
     ui_min_seconds_between_requests: float = 2.0
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
+    fetch_fallback_cached: bool = False
+    fetch_retry_count: int = 3
+    fetch_inter_scheme_delay_seconds: float = 1.0
+
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:

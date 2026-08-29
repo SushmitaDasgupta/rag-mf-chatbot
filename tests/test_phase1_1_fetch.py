@@ -9,8 +9,10 @@ import pytest
 import yaml
 
 from src.ingest.fetch import (
+    build_fetch_headers,
     content_sha256,
     fetch_scheme_html,
+    fetch_scheme_with_fallback,
     run_fetch,
     validate_scheme_url,
 )
@@ -150,6 +152,50 @@ def test_run_fetch_fail_closed_and_writes_log(tmp_path: Path) -> None:
     log = yaml.safe_load(log_path.read_text(encoding="utf-8"))
     assert log["latest_overall_status"] == "failed"
     assert len(log["schemes"]) == 2
+
+
+def test_build_fetch_headers_uses_browser_user_agent() -> None:
+    headers = build_fetch_headers()
+    assert "Mozilla" in headers["User-Agent"]
+    assert "text/html" in headers["Accept"]
+
+
+def test_fetch_fallback_uses_cached_raw_on_network_failure(tmp_path: Path) -> None:
+    html = b"<html><body>cached corpus</body></html>"
+    raw_path = tmp_path / "kotak_large_cap_direct_growth.html"
+    raw_path.write_bytes(html)
+
+    transport = httpx.MockTransport(
+        lambda request: httpx.Response(403, content=b"forbidden")
+    )
+    with httpx.Client(transport=transport) as client:
+        result = fetch_scheme_with_fallback(
+            _scheme(),
+            raw_dir=tmp_path,
+            client=client,
+            fallback_to_cached=True,
+        )
+
+    assert result.status == "success"
+    assert result.fetch_mode == "cached"
+    assert result.content_hash == content_sha256(html)
+    assert result.warning is not None
+
+
+def test_fetch_fallback_fails_without_cached_raw(tmp_path: Path) -> None:
+    transport = httpx.MockTransport(
+        lambda request: httpx.Response(403, content=b"forbidden")
+    )
+    with httpx.Client(transport=transport) as client:
+        result = fetch_scheme_with_fallback(
+            _scheme(),
+            raw_dir=tmp_path,
+            client=client,
+            fallback_to_cached=True,
+        )
+
+    assert result.status == "failed"
+    assert result.http_status == 403
 
 
 def test_every_success_url_is_problem_statement_url(tmp_path: Path) -> None:

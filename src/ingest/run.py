@@ -47,6 +47,7 @@ def run_ingest(
     *,
     skip_fetch: bool = False,
     verify_only: bool = False,
+    fetch_fallback_cached: bool | None = None,
     skip_parse: bool = False,
     skip_chunk: bool = False,
     skip_index: bool = False,
@@ -69,11 +70,19 @@ def run_ingest(
 
     fetch_status = "skipped"
     if not skip_fetch:
+        fallback = (
+            fetch_fallback_cached
+            if fetch_fallback_cached is not None
+            else settings.fetch_fallback_cached
+        )
         fetch_summary = run_fetch(
             manifest_path=manifest_path or settings.manifest_path,
             raw_dir=raw_dir or settings.raw_dir,
             scheme_ids=scheme_ids,
             verify_only=verify_only,
+            fallback_to_cached=fallback,
+            retry_count=settings.fetch_retry_count,
+            inter_scheme_delay_seconds=settings.fetch_inter_scheme_delay_seconds,
         )
         fetch_status = fetch_summary.overall_status
         if not fetch_summary.ok:
@@ -181,6 +190,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--scheme-id", action="append", dest="scheme_ids", default=None)
     parser.add_argument("--skip-fetch", action="store_true")
     parser.add_argument("--verify-only", action="store_true")
+    parser.add_argument(
+        "--fetch-fallback-cached",
+        action="store_true",
+        help="On network failure, reuse committed raw HTML if present",
+    )
     parser.add_argument("--skip-parse", action="store_true")
     parser.add_argument("--skip-chunk", action="store_true")
     parser.add_argument("--skip-index", action="store_true")
@@ -196,6 +210,9 @@ def main(argv: list[str] | None = None) -> int:
         summary = run_ingest(
             skip_fetch=args.skip_fetch,
             verify_only=args.verify_only,
+            fetch_fallback_cached=(
+                True if args.fetch_fallback_cached else None
+            ),
             skip_parse=args.skip_parse,
             skip_chunk=args.skip_chunk,
             skip_index=args.skip_index,

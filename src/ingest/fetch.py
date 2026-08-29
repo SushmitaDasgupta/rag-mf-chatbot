@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import sys
+import time
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -23,9 +24,12 @@ from src.config import REPO_ROOT, get_settings
 from src.guardrails.citations import is_allowed_citation
 
 DEFAULT_USER_AGENT = (
-    "MutualFundFAQBot/0.1 (+facts-only research; contact=local-dev)"
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 )
 DEFAULT_TIMEOUT_SECONDS = 30.0
+RETRYABLE_HTTP_STATUS = {403, 408, 429, 500, 502, 503, 504}
+RETRY_BACKOFF_SECONDS = (2.0, 5.0, 10.0)
 
 
 @dataclass
@@ -42,6 +46,8 @@ class SchemeFetchResult:
     html_path: str | None = None
     error: str | None = None
     hash_changed: bool | None = None
+    fetch_mode: str | None = None  # network | cached | verify
+    warning: str | None = None
 
 
 @dataclass
@@ -77,6 +83,35 @@ def _display_path(path: Path) -> str:
 
 def content_sha256(body: bytes) -> str:
     return hashlib.sha256(body).hexdigest()
+
+
+def build_fetch_headers(user_agent: str = DEFAULT_USER_AGENT) -> dict[str, str]:
+    return {
+        "User-Agent": user_agent,
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-IN,en;q=0.9",
+        "Cache-Control": "no-cache",
+    }
+
+
+def _http_get_with_retries(
+    http: httpx.Client,
+    url: str,
+    *,
+    retry_count: int,
+) -> httpx.Response:
+    last_response: httpx.Response | None = None
+    attempts = max(1, retry_count)
+    for attempt in range(attempts):
+        response = http.get(url)
+        last_response = response
+        if response.status_code not in RETRYABLE_HTTP_STATUS:
+            return response
+        if attempt < attempts - 1:
+            backoff = RETRY_BACKOFF_SECONDS[min(attempt, len(RETRY_BACKOFF_SECONDS) - 1)]
+            time.sleep(backoff)
+    assert last_response is not None
+    return last_response
 
 
 def load_manifest_schemes(manifest_path: str | Path) -> list[dict[str, Any]]:
@@ -125,6 +160,7 @@ def fetch_scheme_html(
     timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
     client: httpx.Client | None = None,
     previous_hash: str | None = None,
+    retry_count: int = 3,
 ) -> SchemeFetchResult:
     """Fetch one scheme page. Never silent-skips failures."""
     scheme_id = str(scheme["scheme_id"])
@@ -149,12 +185,12 @@ def fetch_scheme_html(
     http = client or httpx.Client(
         timeout=timeout_seconds,
         follow_redirects=True,
-        headers={"User-Agent": DEFAULT_USER_AGENT, "Accept": "text/html"},
+        headers=build_fetch_headers(),
     )
 
     try:
         try:
-            response = http.get(url)
+            response = _http_get_with_retries(http, url, retry_count=retry_count)
         except httpx.TimeoutException as exc:
             return SchemeFetchResult(
                 scheme_id=scheme_id,
@@ -231,6 +267,7 @@ def fetch_scheme_html(
             fetched_at=fetched_at,
             html_path=_display_path(html_path),
             hash_changed=hash_changed if previous_hash is not None else True,
+            fetch_mode="network",
         )
     finally:
         if owns_client:
@@ -300,7 +337,41 @@ def verify_existing_raw(
         fetched_at=fetched_at,
         html_path=_display_path(html_path),
         hash_changed=hash_changed if previous_hash is not None else None,
+        fetch_mode="verify",
     )
+
+
+def fetch_scheme_with_fallback(
+    scheme: dict[str, Any],
+    *,
+    raw_dir: Path,
+    timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
+    client: httpx.Client,
+    previous_hash: str | None = None,
+    retry_count: int = 3,
+    fallback_to_cached: bool = False,
+) -> SchemeFetchResult:
+    """Try network fetch; on failure optionally reuse committed raw HTML."""
+    network_result = fetch_scheme_html(
+        scheme,
+        raw_dir=raw_dir,
+        timeout_seconds=timeout_seconds,
+        client=client,
+        previous_hash=previous_hash,
+        retry_count=retry_count,
+    )
+    if network_result.status == "success" or not fallback_to_cached:
+        return network_result
+
+    cached = verify_existing_raw(scheme, raw_dir=raw_dir, previous_hash=previous_hash)
+    if cached.status != "success":
+        return network_result
+
+    cached.fetch_mode = "cached"
+    cached.warning = (
+        f"Network fetch failed ({network_result.error}); using cached raw HTML"
+    )
+    return cached
 
 
 def write_fetch_log(summary: FetchRunSummary, fetch_log_path: Path) -> None:
@@ -349,7 +420,10 @@ def run_fetch(
     fetch_log_path: str | Path | None = None,
     scheme_ids: set[str] | None = None,
     verify_only: bool = False,
+    fallback_to_cached: bool = False,
     timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
+    retry_count: int = 3,
+    inter_scheme_delay_seconds: float = 0.0,
     client: httpx.Client | None = None,
 ) -> FetchRunSummary:
     settings = get_settings()
@@ -376,11 +450,11 @@ def run_fetch(
         http = httpx.Client(
             timeout=timeout_seconds,
             follow_redirects=True,
-            headers={"User-Agent": DEFAULT_USER_AGENT, "Accept": "text/html"},
+            headers=build_fetch_headers(),
         )
 
     try:
-        for scheme in schemes:
+        for index, scheme in enumerate(schemes):
             scheme_id = str(scheme["scheme_id"])
             prev = _previous_hash(log_path, scheme_id)
             if verify_only:
@@ -390,14 +464,22 @@ def run_fetch(
             else:
                 assert http is not None
                 results.append(
-                    fetch_scheme_html(
+                    fetch_scheme_with_fallback(
                         scheme,
                         raw_dir=raw,
                         timeout_seconds=timeout_seconds,
                         client=http,
                         previous_hash=prev,
+                        retry_count=retry_count,
+                        fallback_to_cached=fallback_to_cached,
                     )
                 )
+            if (
+                not verify_only
+                and inter_scheme_delay_seconds > 0
+                and index < len(schemes) - 1
+            ):
+                time.sleep(inter_scheme_delay_seconds)
     finally:
         if owns_client and http is not None:
             http.close()
@@ -425,7 +507,10 @@ def _print_summary(summary: FetchRunSummary) -> None:
             changed = " (hash changed)"
         elif r.hash_changed is False:
             changed = " (hash unchanged)"
-        print(f"  [{flag}] {r.scheme_id}: {extra}{changed}")
+        mode = f" [{r.fetch_mode}]" if r.fetch_mode else ""
+        print(f"  [{flag}] {r.scheme_id}: {extra}{changed}{mode}")
+        if r.warning:
+            print(f"       ! {r.warning}")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -460,12 +545,18 @@ def main(argv: list[str] | None = None) -> int:
         help="Validate existing raw HTML files; do not download",
     )
     parser.add_argument(
+        "--fetch-fallback-cached",
+        action="store_true",
+        help="On network failure, reuse committed raw HTML if present",
+    )
+    parser.add_argument(
         "--timeout",
         type=float,
         default=DEFAULT_TIMEOUT_SECONDS,
         help=f"HTTP timeout seconds (default {DEFAULT_TIMEOUT_SECONDS})",
     )
     args = parser.parse_args(argv)
+    settings = get_settings()
 
     try:
         summary = run_fetch(
@@ -474,7 +565,10 @@ def main(argv: list[str] | None = None) -> int:
             fetch_log_path=args.fetch_log,
             scheme_ids=set(args.scheme_ids) if args.scheme_ids else None,
             verify_only=args.verify_only,
+            fallback_to_cached=args.fetch_fallback_cached or settings.fetch_fallback_cached,
             timeout_seconds=args.timeout,
+            retry_count=settings.fetch_retry_count,
+            inter_scheme_delay_seconds=settings.fetch_inter_scheme_delay_seconds,
         )
     except Exception as exc:  # noqa: BLE001 — CLI surface
         print(f"Fetch aborted: {exc}", file=sys.stderr)

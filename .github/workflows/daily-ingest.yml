@@ -31,6 +31,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -92,7 +95,19 @@ jobs:
           git add data/raw data/processed data/vectorstore
           if git diff --staged --quiet; then
             echo "No corpus changes to commit."
-          else
-            git commit -m "chore(ingest): daily corpus refresh $(date -u +%Y-%m-%d)"
-            git push
+            exit 0
           fi
+          git commit -m "chore(ingest): daily corpus refresh $(date -u +%Y-%m-%d)"
+          # Ingest can take several minutes; rebase onto latest main before push.
+          for attempt in 1 2 3 4 5; do
+            echo "Push attempt ${attempt}/5: rebasing onto origin/main..."
+            git pull --rebase origin main
+            if git push origin HEAD:main; then
+              echo "Corpus push succeeded on attempt ${attempt}."
+              exit 0
+            fi
+            echo "Push rejected; waiting before retry..."
+            sleep $((attempt * 3))
+          done
+          echo "Failed to push corpus commit after 5 attempts."
+          exit 1

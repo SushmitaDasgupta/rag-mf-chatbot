@@ -37,6 +37,12 @@ def test_daily_ingest_workflow_runs_full_pipeline() -> None:
     assert "GROQ_API_KEY" not in text
 
 
+def test_daily_ingest_workflow_rebases_before_push() -> None:
+    text = WORKFLOW_PATH.read_text(encoding="utf-8")
+    assert "git pull --rebase origin main" in text
+    assert "git push origin HEAD:main" in text
+
+
 def test_vectorstore_not_gitignored() -> None:
     gitignore = (REPO_ROOT / ".gitignore").read_text(encoding="utf-8")
     assert "data/vectorstore/" not in gitignore.splitlines()

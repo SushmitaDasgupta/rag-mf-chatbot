@@ -19,7 +19,17 @@ export async function postChat(message: string): Promise<{
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ message }),
   });
-  const data = (await res.json()) as ChatApiResponse | { detail?: string };
+  const raw = await res.text();
+  let data: ChatApiResponse | { detail?: string };
+  try {
+    data = JSON.parse(raw) as ChatApiResponse | { detail?: string };
+  } catch {
+    throw new Error(
+      res.ok
+        ? "API returned a non-JSON response."
+        : `API request failed (${res.status}). Check Vercel /api proxy and Railway backend.`,
+    );
+  }
   return { status: res.status, data };
 }
 

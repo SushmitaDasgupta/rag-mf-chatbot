@@ -8,13 +8,13 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const apiUrl = (process.env.VITE_API_BASE_URL || process.env.RAILWAY_API_URL || "")
+const apiUrl = (process.env.RAILWAY_API_URL || process.env.VITE_API_BASE_URL || "")
   .trim()
   .replace(/\/$/, "");
 
 if (!apiUrl) {
   console.error(
-    "ERROR: Set VITE_API_BASE_URL (or RAILWAY_API_URL) in Vercel Environment Variables.",
+    "ERROR: Set RAILWAY_API_URL (recommended) or VITE_API_BASE_URL in Vercel Environment Variables.",
   );
   console.error("Use your Railway public URL from Phase 1.5, without a trailing slash.");
   console.error("Example: https://rag-mf-api-production.up.railway.app");

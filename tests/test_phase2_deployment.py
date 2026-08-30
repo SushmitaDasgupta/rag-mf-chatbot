@@ -42,7 +42,7 @@ def test_phase2_env_examples() -> None:
     ui_env = (UI_DIR / ".env.example").read_text(encoding="utf-8")
     vercel_env = (REPO_ROOT / "vercel.env.example").read_text(encoding="utf-8")
     assert "VITE_API_BASE_URL" in ui_env
-    assert "VITE_API_BASE_URL" in vercel_env
+    assert "RAILWAY_API_URL" in vercel_env
     assert "railway" in vercel_env.lower()
 
 
@@ -58,7 +58,7 @@ def test_phase2_build_script_exists() -> None:
     assert path.stat().st_mode & 0o111
     text = path.read_text(encoding="utf-8")
     assert "VITE_API_BASE_URL" in text
-    assert "npm run build" in text
+    assert "VITE_API_BASE_URL=" in (REPO_ROOT / "vercel.json").read_text(encoding="utf-8")
 
 
 def test_phase2_verify_script_exists() -> None:

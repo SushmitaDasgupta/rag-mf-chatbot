@@ -104,9 +104,10 @@ export function useChat() {
           },
         ]);
         return true;
-      } catch {
+      } catch (err) {
+        const detail = err instanceof Error ? err.message : "";
         const hint = import.meta.env.PROD
-          ? "Could not reach the API. In Vercel, set VITE_API_BASE_URL to your Railway URL and redeploy."
+          ? `Could not reach the API. ${detail || "Set RAILWAY_API_URL on Vercel and redeploy."}`
           : "Could not reach the API. Start the backend with: uvicorn src.api.main:app --reload";
         setMessages((prev) => [
           ...prev,

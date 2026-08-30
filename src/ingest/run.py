@@ -124,6 +124,7 @@ def run_ingest(
                 fallback_to_cached=fallback,
                 retry_count=settings.fetch_retry_count,
                 inter_scheme_delay_seconds=settings.fetch_inter_scheme_delay_seconds,
+                fail_on_cached_fallback=settings.fetch_fail_on_cached_fallback,
             )
         fetch_status = fetch_summary.overall_status
         if not fetch_summary.ok:

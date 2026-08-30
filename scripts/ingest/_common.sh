@@ -23,3 +23,14 @@ build_scheme_args() {
     INGEST_SCHEME_ARGS=(--scheme-id "$INGEST_SCHEME_ID")
   fi
 }
+
+# Run python -m <module> with optional --scheme-id args (safe under set -u on bash 3.2).
+ingest_python() {
+  local module="$1"
+  shift
+  if ((${#INGEST_SCHEME_ARGS[@]})); then
+    stdbuf -oL -eL python -u -m "$module" "$@" "${INGEST_SCHEME_ARGS[@]}"
+  else
+    stdbuf -oL -eL python -u -m "$module" "$@"
+  fi
+}

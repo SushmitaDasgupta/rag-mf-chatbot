@@ -1,14 +1,14 @@
 version: 1
-run_id: 2026-08-29T142321Z0000
-started_at: '2026-08-29T14:23:21+00:00'
-finished_at: '2026-08-29T14:23:22+00:00'
+run_id: 2026-08-30T032415Z0000
+started_at: '2026-08-30T03:24:15+00:00'
+finished_at: '2026-08-30T03:24:16+00:00'
 overall_status: success
 schemes:
 - scheme_id: kotak_large_cap_direct_growth
   status: success
   source_url: https://www.indmoney.com/mutual-funds/kotak-large-cap-fund-direct-growth
   artifact_path: data/processed/parsed/kotak_large_cap_direct_growth.json
-  content_hash: d25059a31dcb9f687cb558580842747586213ee713ca5b4cde902efb41a2cb97
+  content_hash: c53cfe3074295b4332e4f66f17de18999fab131c65f16f0e7bbee3e11e003488
   flags:
     parse_source: next_data
     fee_load_tables_ok: true
@@ -25,13 +25,13 @@ schemes:
     lock_in: No Lock-in
     min_lumpsum: ₹100
     aum: ₹11028 Cr
-    as_of_date: 26 Aug 2026
+    as_of_date: 28 Aug 2026
   error: null
 - scheme_id: kotak_midcap_direct_growth
   status: success
   source_url: https://www.indmoney.com/mutual-funds/kotak-midcap-fund-direct-growth
   artifact_path: data/processed/parsed/kotak_midcap_direct_growth.json
-  content_hash: 72dc47131a544a3085d365525e626f239a98a252051e3c91d0011029fc0986e3
+  content_hash: 97c568796b73528eb0392dcde8d2e907b185b96c4ce871e431f60107acf966ab
   flags:
     parse_source: next_data
     fee_load_tables_ok: true
@@ -48,13 +48,13 @@ schemes:
     lock_in: No Lock-in
     min_lumpsum: ₹100
     aum: ₹69283 Cr
-    as_of_date: 26 Aug 2026
+    as_of_date: 28 Aug 2026
   error: null
 - scheme_id: kotak_arbitrage_direct_growth
   status: success
   source_url: https://www.indmoney.com/mutual-funds/kotak-arbitrage-fund-direct-growth
   artifact_path: data/processed/parsed/kotak_arbitrage_direct_growth.json
-  content_hash: 6f104ee880c34a3a056fec3b1f90dff30ee8f9c88a8afa1bf579c25d99fc4422
+  content_hash: fbe3dac63c6417c4e5e20e864b91ed8d4beda9f208b7babf6d61b23e94a68411
   flags:
     parse_source: next_data
     fee_load_tables_ok: true
@@ -71,13 +71,13 @@ schemes:
     lock_in: No Lock-in
     min_lumpsum: ₹100
     aum: ₹74399 Cr
-    as_of_date: 26 Aug 2026
+    as_of_date: 28 Aug 2026
   error: null
 - scheme_id: kotak_savings_direct_growth
   status: success
   source_url: https://www.indmoney.com/mutual-funds/kotak-savings-fund-direct-growth
   artifact_path: data/processed/parsed/kotak_savings_direct_growth.json
-  content_hash: 5100c860b0324b6a96079d1af32e28dd3eee1e5710431f905b20af419774d95e
+  content_hash: 1493385c33aff4c0d1f965a19948d52734f11f2cb17f660bef27d25558e2f7fe
   flags:
     parse_source: next_data
     fee_load_tables_ok: true
@@ -94,13 +94,13 @@ schemes:
     lock_in: No Lock-in
     min_lumpsum: ₹100
     aum: ₹15708 Cr
-    as_of_date: 25 Aug 2026
+    as_of_date: 28 Aug 2026
   error: null
 - scheme_id: kotak_gold_growth_direct
   status: success
   source_url: https://www.indmoney.com/mutual-funds/kotak-gold-fund-growth-direct
   artifact_path: data/processed/parsed/kotak_gold_growth_direct.json
-  content_hash: d7853a39fca9b1240d0665ce62baffe79b082025f9c48b694072eecbf38fa5b4
+  content_hash: 7574944f6c3504cb059cbccbe4d6ec2abf9f002ca312e181e9d6065a542d9499
   flags:
     parse_source: next_data
     fee_load_tables_ok: true
@@ -117,7 +117,7 @@ schemes:
     lock_in: No Lock-in
     min_lumpsum: ₹100
     aum: ₹6532 Cr
-    as_of_date: 26 Aug 2026
+    as_of_date: 28 Aug 2026
   error: null
 - scheme_id: kotak_flexicap_direct_growth
   status: success
@@ -146,7 +146,7 @@ schemes:
   status: success
   source_url: https://www.indmoney.com/mutual-funds/kotak-liquid-fund-growth-direct
   artifact_path: data/processed/parsed/kotak_liquid_growth_direct.json
-  content_hash: 2a7137bbd032c75e3c7b85dc371e793e2cd2a0fcaf30fa2b0a0cd021c8409624
+  content_hash: 3746d7c85f65e261fe4709633131281e5824bd29a958a02077d815906eca3057
   flags:
     parse_source: next_data
     fee_load_tables_ok: true
@@ -165,5 +165,5 @@ schemes:
     lock_in: No Lock-in
     min_lumpsum: ₹1,000
     aum: ₹51309 Cr
-    as_of_date: 26 Aug 2026
+    as_of_date: 29 Aug 2026
   error: null

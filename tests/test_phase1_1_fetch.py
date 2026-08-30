@@ -158,6 +158,8 @@ def test_build_fetch_headers_uses_browser_user_agent() -> None:
     headers = build_fetch_headers()
     assert "Mozilla" in headers["User-Agent"]
     assert "text/html" in headers["Accept"]
+    assert "Sec-CH-UA" in headers
+    assert headers["Sec-Fetch-Mode"] == "navigate"
 
 
 def test_fetch_fallback_uses_cached_raw_on_network_failure(tmp_path: Path) -> None:
@@ -196,6 +198,32 @@ def test_fetch_fallback_fails_without_cached_raw(tmp_path: Path) -> None:
 
     assert result.status == "failed"
     assert result.http_status == 403
+
+
+def test_fetch_fail_on_cached_fallback_marks_run_failed(tmp_path: Path) -> None:
+    html = b"<html><body>cached corpus</body></html>"
+    raw_path = tmp_path / "kotak_large_cap_direct_growth.html"
+    raw_path.write_bytes(html)
+
+    manifest = tmp_path / "manifest.yaml"
+    manifest.write_text(yaml.safe_dump({"schemes": [_scheme()]}), encoding="utf-8")
+    log_path = tmp_path / "fetch_log.yaml"
+
+    transport = httpx.MockTransport(
+        lambda request: httpx.Response(403, content=b"forbidden")
+    )
+    with httpx.Client(transport=transport) as client:
+        summary = run_fetch(
+            manifest_path=manifest,
+            raw_dir=tmp_path,
+            fetch_log_path=log_path,
+            fallback_to_cached=True,
+            fail_on_cached_fallback=True,
+            client=client,
+        )
+
+    assert summary.overall_status == "failed"
+    assert summary.schemes[0].fetch_mode == "cached"
 
 
 def test_every_success_url_is_problem_statement_url(tmp_path: Path) -> None:

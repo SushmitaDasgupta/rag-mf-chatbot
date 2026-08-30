@@ -27,8 +27,8 @@ from src.logging_config import get_logger, log_checkpoint, log_manifest_roster, 
 logger = get_logger(__name__)
 
 DEFAULT_USER_AGENT = (
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 )
 DEFAULT_TIMEOUT_SECONDS = 30.0
 RETRYABLE_HTTP_STATUS = {403, 408, 429, 500, 502, 503, 504}
@@ -89,11 +89,25 @@ def content_sha256(body: bytes) -> str:
 
 
 def build_fetch_headers(user_agent: str = DEFAULT_USER_AGENT) -> dict[str, str]:
+    # indmoney.com is behind Cloudflare; missing Sec-CH-UA / Sec-Fetch headers → HTTP 403
+    # on GitHub Actions and many datacenter IPs (scheduler then silently reused stale HTML).
     return {
         "User-Agent": user_agent,
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "en-IN,en;q=0.9",
+        "Accept": (
+            "text/html,application/xhtml+xml,application/xml;q=0.9,"
+            "image/avif,image/webp,image/apng,*/*;q=0.8"
+        ),
+        "Accept-Language": "en-IN,en;q=0.9,en-US;q=0.8",
         "Cache-Control": "no-cache",
+        "Pragma": "no-cache",
+        "Upgrade-Insecure-Requests": "1",
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "none",
+        "Sec-Fetch-User": "?1",
+        "Sec-CH-UA": '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+        "Sec-CH-UA-Mobile": "?0",
+        "Sec-CH-UA-Platform": '"Windows"',
     }
 
 
@@ -427,6 +441,7 @@ def run_fetch(
     timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
     retry_count: int = 3,
     inter_scheme_delay_seconds: float = 0.0,
+    fail_on_cached_fallback: bool = False,
     client: httpx.Client | None = None,
 ) -> FetchRunSummary:
     settings = get_settings()
@@ -508,7 +523,21 @@ def run_fetch(
             http.close()
 
     finished_at = _utc_now_iso()
-    overall = "success" if results and all(r.status == "success" for r in results) else "failed"
+    cached_fallback = sum(1 for r in results if r.fetch_mode == "cached")
+    if fail_on_cached_fallback and cached_fallback > 0:
+        overall = "failed"
+        logger.error(
+            "Fetch failed: %d scheme(s) used cached HTML fallback (network blocked). "
+            "Corpus dates will be stale.",
+            cached_fallback,
+        )
+        pipeline_echo(
+            f"ERROR | Fetch failed: {cached_fallback} scheme(s) fell back to cached HTML"
+        )
+    elif results and all(r.status == "success" for r in results):
+        overall = "success"
+    else:
+        overall = "failed"
     summary = FetchRunSummary(
         run_id=run_id,
         started_at=started_at,
@@ -630,6 +659,7 @@ def main(argv: list[str] | None = None) -> int:
             timeout_seconds=args.timeout,
             retry_count=settings.fetch_retry_count,
             inter_scheme_delay_seconds=settings.fetch_inter_scheme_delay_seconds,
+            fail_on_cached_fallback=settings.fetch_fail_on_cached_fallback,
         )
     except Exception as exc:  # noqa: BLE001 — CLI surface
         print(f"Fetch aborted: {exc}", file=sys.stderr)

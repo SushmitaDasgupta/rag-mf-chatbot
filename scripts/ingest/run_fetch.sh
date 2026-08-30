@@ -9,5 +9,5 @@ source "${SCRIPT_DIR}/_common.sh"
 build_scheme_args
 
 phase_banner "P1.1 FETCH" "START"
-stdbuf -oL -eL python -u -m src.ingest.fetch --fetch-fallback-cached "${INGEST_SCHEME_ARGS[@]}"
+ingest_python src.ingest.fetch --fetch-fallback-cached
 phase_banner "P1.1 FETCH" "END"

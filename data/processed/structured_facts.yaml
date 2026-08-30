@@ -8,7 +8,7 @@ fields:
 schemes:
   kotak_large_cap_direct_growth:
     source_url: https://www.indmoney.com/mutual-funds/kotak-large-cap-fund-direct-growth
-    last_updated: 26 Aug 2026
+    last_updated: 28 Aug 2026
     candidates_from: phase_1_2_parse
     expense_ratio: 0.67%
     exit_load: 1.0% — Exit Load of 1% if redeemed in 0-1 Years
@@ -20,7 +20,7 @@ schemes:
     aum: ₹11028 Cr
   kotak_midcap_direct_growth:
     source_url: https://www.indmoney.com/mutual-funds/kotak-midcap-fund-direct-growth
-    last_updated: 26 Aug 2026
+    last_updated: 28 Aug 2026
     candidates_from: phase_1_2_parse
     expense_ratio: 0.39%
     exit_load: 1.0% — Exit Load of 1% if redeemed in 0-1 Years
@@ -32,7 +32,7 @@ schemes:
     aum: ₹69283 Cr
   kotak_arbitrage_direct_growth:
     source_url: https://www.indmoney.com/mutual-funds/kotak-arbitrage-fund-direct-growth
-    last_updated: 26 Aug 2026
+    last_updated: 28 Aug 2026
     candidates_from: phase_1_2_parse
     expense_ratio: 2.3734%
     exit_load: 0.2% — Exit Load of 0.25% if redeemed in 0-30 Days
@@ -44,7 +44,7 @@ schemes:
     aum: ₹74399 Cr
   kotak_savings_direct_growth:
     source_url: https://www.indmoney.com/mutual-funds/kotak-savings-fund-direct-growth
-    last_updated: 25 Aug 2026
+    last_updated: 28 Aug 2026
     candidates_from: phase_1_2_parse
     expense_ratio: 0.37%
     exit_load: 0%
@@ -56,7 +56,7 @@ schemes:
     aum: ₹15708 Cr
   kotak_gold_growth_direct:
     source_url: https://www.indmoney.com/mutual-funds/kotak-gold-fund-growth-direct
-    last_updated: 26 Aug 2026
+    last_updated: 28 Aug 2026
     candidates_from: phase_1_2_parse
     expense_ratio: 0.66%
     exit_load: 1.0% — Exit Load of 1% if redeemed in 0-15 Days
@@ -80,7 +80,7 @@ schemes:
     aum: ₹56119 Cr
   kotak_liquid_growth_direct:
     source_url: https://www.indmoney.com/mutual-funds/kotak-liquid-fund-growth-direct
-    last_updated: 26 Aug 2026
+    last_updated: 29 Aug 2026
     candidates_from: phase_1_2_parse
     expense_ratio: 0.19%
     exit_load: 0.0% — Exit Load of 0.007% if redeemed in 0-1 Days, 0.0065% if redeemed
@@ -92,4 +92,4 @@ schemes:
     lock_in: No Lock-in
     min_lumpsum: ₹1,000
     aum: ₹51309 Cr
-updated_at: '2026-08-29T14:23:22+00:00'
+updated_at: '2026-08-30T03:24:16+00:00'

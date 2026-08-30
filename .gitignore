@@ -39,3 +39,5 @@ Thumbs.db
 # Uncomment to ignore fetched pages if not committing them:
 # data/raw/*
 # !data/raw/.gitkeep
+.vercel
+.env*

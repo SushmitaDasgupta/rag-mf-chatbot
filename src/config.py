@@ -44,6 +44,7 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
     fetch_fallback_cached: bool = False
+    fetch_fail_on_cached_fallback: bool = False
     fetch_retry_count: int = 3
     fetch_inter_scheme_delay_seconds: float = 1.0
 

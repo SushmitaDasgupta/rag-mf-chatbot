@@ -9,5 +9,5 @@ source "${SCRIPT_DIR}/_common.sh"
 build_scheme_args
 
 phase_banner "P1.3 CHUNK" "START"
-stdbuf -oL -eL python -u -m src.ingest.chunk "${INGEST_SCHEME_ARGS[@]}"
+ingest_python src.ingest.chunk
 phase_banner "P1.3 CHUNK" "END"

@@ -9,5 +9,5 @@ source "${SCRIPT_DIR}/_common.sh"
 build_scheme_args
 
 phase_banner "P1.4 INDEX" "START"
-stdbuf -oL -eL python -u -m src.ingest.index --skip-probes "${INGEST_SCHEME_ARGS[@]}"
+ingest_python src.ingest.index --skip-probes
 phase_banner "P1.4 INDEX" "END"

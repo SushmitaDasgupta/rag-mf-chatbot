@@ -44,6 +44,7 @@ def test_daily_ingest_workflow_runs_full_pipeline() -> None:
     for script in INGEST_PHASE_SCRIPTS:
         assert f"scripts/ingest/{script}" in text
     assert "--fetch-fallback-cached" in (INGEST_DIR / "run_fetch.sh").read_text(encoding="utf-8")
+    assert "FETCH_FAIL_ON_CACHED_FALLBACK" in text
     assert "--skip-probes" in (INGEST_DIR / "run_index.sh").read_text(encoding="utf-8")
     assert "GROQ_API_KEY" not in text
 

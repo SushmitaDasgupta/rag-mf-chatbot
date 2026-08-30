@@ -77,7 +77,8 @@ In the job log you should see `commit_corpus_refresh.sh v3` at the start of the 
 
 | Symptom | Likely cause | Action |
 | --- | --- | --- |
-| Workflow fails at fetch | 403, timeout, or empty body from source | Check `data/raw/fetch_log.yaml` in the run logs; scheduler uses `--fetch-fallback-cached` to reuse committed raw HTML when indmoney blocks GitHub runner IPs |
+| Workflow fails at fetch | 403, timeout, or empty body from source | Check `data/raw/fetch_log.yaml` in the run logs. If `fetch_mode: cached`, indmoney blocked the runner IP — the scheduler now fails instead of silently reusing stale HTML. Re-run after fetch headers fix or run ingest locally: `python -m src.ingest.run` |
+| `Last updated` date stuck / stale | Scheduler used cached HTML fallback after 403 | Confirm latest workflow run shows `mode=network` (not `cached`) in fetch logs; redeploy Railway after a successful ingest commit |
 | Workflow fails at probes | Index/chunk regression | Inspect `retrieval_probe_log.yaml` artifact in workspace; fix ingest locally, then re-run |
 | Workflow succeeds, no commit | Source pages unchanged (idempotent) | Expected — corpus hashes are stable |
 | Push rejected at end of run | New commit landed on `main` during ingest, or rebase conflict on `data/` | Workflow syncs to `origin/main`, rebuilds corpus commit, retries up to 10×; exits 0 if no diff after sync |

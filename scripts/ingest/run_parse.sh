@@ -9,5 +9,5 @@ source "${SCRIPT_DIR}/_common.sh"
 build_scheme_args
 
 phase_banner "P1.2 PARSE" "START"
-stdbuf -oL -eL python -u -m src.ingest.parse "${INGEST_SCHEME_ARGS[@]}"
+ingest_python src.ingest.parse
 phase_banner "P1.2 PARSE" "END"

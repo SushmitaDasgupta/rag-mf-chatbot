@@ -1,5 +1,6 @@
-version: 2
-generated_at: '2026-08-29T14:24:04+00:00'
+version: 1
+run_id: 2026-08-30T032525Z0000
+generated_at: '2026-08-30T03:25:33+00:00'
 embedding_model: BAAI/bge-small-en-v1.5
 summary:
   total: 35
@@ -9,211 +10,668 @@ summary:
 probes:
 - scheme_id: kotak_large_cap_direct_growth
   facet: benchmark
-  top_kind: overview_row
-  top_chunk_id: b0fcde1525215275338afd62
   tier0_present: true
+  tier0_value: Nifty 100 TR INR
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - b0fcde1525215275338afd62
+  - 578c14c8ac5aad01c4b61156
+  - 73e13f94e5078698a1ed5595
+  top_scheme_ids:
+  - kotak_large_cap_direct_growth
+  - kotak_large_cap_direct_growth
+  - kotak_large_cap_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_large_cap_direct_growth
   facet: exit_load
-  top_kind: overview_row
-  top_chunk_id: 578c14c8ac5aad01c4b61156
   tier0_present: true
+  tier0_value: 1.0% — Exit Load of 1% if redeemed in 0-1 Years
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 578c14c8ac5aad01c4b61156
+  - 50672ec5e25483426fe6d550
+  - 73e13f94e5078698a1ed5595
+  top_scheme_ids:
+  - kotak_large_cap_direct_growth
+  - kotak_large_cap_direct_growth
+  - kotak_large_cap_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_large_cap_direct_growth
   facet: expense_ratio
-  top_kind: overview_row
-  top_chunk_id: 73e13f94e5078698a1ed5595
   tier0_present: true
+  tier0_value: 0.67%
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 73e13f94e5078698a1ed5595
+  - 578c14c8ac5aad01c4b61156
+  - 50672ec5e25483426fe6d550
+  top_scheme_ids:
+  - kotak_large_cap_direct_growth
+  - kotak_large_cap_direct_growth
+  - kotak_large_cap_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_large_cap_direct_growth
   facet: min_sip
-  top_kind: overview_row
-  top_chunk_id: 4c7662923e96092541f4c31a
   tier0_present: true
+  tier0_value: ₹100
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 4c7662923e96092541f4c31a
+  - 578c14c8ac5aad01c4b61156
+  - 73e13f94e5078698a1ed5595
+  top_scheme_ids:
+  - kotak_large_cap_direct_growth
+  - kotak_large_cap_direct_growth
+  - kotak_large_cap_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_large_cap_direct_growth
   facet: riskometer
-  top_kind: riskometer
-  top_chunk_id: bb7edef4917418f4f5356cc6
   tier0_present: true
+  tier0_value: Very High Risk
+  tier2_hit: true
+  top_kinds:
+  - riskometer
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - bb7edef4917418f4f5356cc6
+  - b0fcde1525215275338afd62
+  - 50672ec5e25483426fe6d550
+  top_scheme_ids:
+  - kotak_large_cap_direct_growth
+  - kotak_large_cap_direct_growth
+  - kotak_large_cap_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_midcap_direct_growth
   facet: benchmark
-  top_kind: overview_row
-  top_chunk_id: 949cc80544c2df0946cbb32e
   tier0_present: true
+  tier0_value: Nifty Midcap 150 TR INR
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 949cc80544c2df0946cbb32e
+  - ba84dcd583476b440e236ccf
+  - 3e77be1e5f9c070e650dc3d1
+  top_scheme_ids:
+  - kotak_midcap_direct_growth
+  - kotak_midcap_direct_growth
+  - kotak_midcap_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_midcap_direct_growth
   facet: exit_load
-  top_kind: overview_row
-  top_chunk_id: ba84dcd583476b440e236ccf
   tier0_present: true
+  tier0_value: 1.0% — Exit Load of 1% if redeemed in 0-1 Years
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - ba84dcd583476b440e236ccf
+  - 1676cf6cfb309fd2d7996a48
+  - 3e77be1e5f9c070e650dc3d1
+  top_scheme_ids:
+  - kotak_midcap_direct_growth
+  - kotak_midcap_direct_growth
+  - kotak_midcap_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_midcap_direct_growth
   facet: expense_ratio
-  top_kind: overview_row
-  top_chunk_id: 3e77be1e5f9c070e650dc3d1
   tier0_present: true
+  tier0_value: 0.39%
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 3e77be1e5f9c070e650dc3d1
+  - ba84dcd583476b440e236ccf
+  - 1676cf6cfb309fd2d7996a48
+  top_scheme_ids:
+  - kotak_midcap_direct_growth
+  - kotak_midcap_direct_growth
+  - kotak_midcap_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_midcap_direct_growth
   facet: min_sip
-  top_kind: overview_row
-  top_chunk_id: b72bde1384d972a436647ada
   tier0_present: true
+  tier0_value: ₹100
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - b72bde1384d972a436647ada
+  - ba84dcd583476b440e236ccf
+  - 3e77be1e5f9c070e650dc3d1
+  top_scheme_ids:
+  - kotak_midcap_direct_growth
+  - kotak_midcap_direct_growth
+  - kotak_midcap_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_midcap_direct_growth
   facet: riskometer
-  top_kind: riskometer
-  top_chunk_id: ddc579c204ff2e013c306753
   tier0_present: true
+  tier0_value: Very High Risk
+  tier2_hit: true
+  top_kinds:
+  - riskometer
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - ddc579c204ff2e013c306753
+  - 949cc80544c2df0946cbb32e
+  - 1676cf6cfb309fd2d7996a48
+  top_scheme_ids:
+  - kotak_midcap_direct_growth
+  - kotak_midcap_direct_growth
+  - kotak_midcap_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_arbitrage_direct_growth
   facet: benchmark
-  top_kind: overview_row
-  top_chunk_id: 2483eb24add9eb99d6ee510b
   tier0_present: true
+  tier0_value: NIFTY 50 Arbitrage TR INR
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 2483eb24add9eb99d6ee510b
+  - e243ef7690584b3472241639
+  - fb248c5c5748498802dab3d1
+  top_scheme_ids:
+  - kotak_arbitrage_direct_growth
+  - kotak_arbitrage_direct_growth
+  - kotak_arbitrage_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_arbitrage_direct_growth
   facet: exit_load
-  top_kind: overview_row
-  top_chunk_id: fb248c5c5748498802dab3d1
   tier0_present: true
+  tier0_value: 0.2% — Exit Load of 0.25% if redeemed in 0-30 Days
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - fb248c5c5748498802dab3d1
+  - e243ef7690584b3472241639
+  - 12538ae628d870acd9dbe11f
+  top_scheme_ids:
+  - kotak_arbitrage_direct_growth
+  - kotak_arbitrage_direct_growth
+  - kotak_arbitrage_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_arbitrage_direct_growth
   facet: expense_ratio
-  top_kind: overview_row
-  top_chunk_id: 506dbafdeff757ef6786fe48
   tier0_present: true
+  tier0_value: 2.3734%
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 506dbafdeff757ef6786fe48
+  - e243ef7690584b3472241639
+  - 12538ae628d870acd9dbe11f
+  top_scheme_ids:
+  - kotak_arbitrage_direct_growth
+  - kotak_arbitrage_direct_growth
+  - kotak_arbitrage_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_arbitrage_direct_growth
   facet: min_sip
-  top_kind: overview_row
-  top_chunk_id: 12538ae628d870acd9dbe11f
   tier0_present: true
+  tier0_value: ₹100
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 12538ae628d870acd9dbe11f
+  - fb248c5c5748498802dab3d1
+  - 506dbafdeff757ef6786fe48
+  top_scheme_ids:
+  - kotak_arbitrage_direct_growth
+  - kotak_arbitrage_direct_growth
+  - kotak_arbitrage_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_arbitrage_direct_growth
   facet: riskometer
-  top_kind: riskometer
-  top_chunk_id: 5b10652f2c4a9f93a9a87421
   tier0_present: true
+  tier0_value: Low Risk
+  tier2_hit: true
+  top_kinds:
+  - riskometer
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 5b10652f2c4a9f93a9a87421
+  - 2483eb24add9eb99d6ee510b
+  - e243ef7690584b3472241639
+  top_scheme_ids:
+  - kotak_arbitrage_direct_growth
+  - kotak_arbitrage_direct_growth
+  - kotak_arbitrage_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_savings_direct_growth
   facet: benchmark
-  top_kind: overview_row
-  top_chunk_id: 9143db531b279e7e2d6eff63
   tier0_present: true
+  tier0_value: NIFTY Ultra Short Duration Debt TR INR
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 9143db531b279e7e2d6eff63
+  - 15541b89dadce46dcc534a09
+  - ddb6426f172c4998f039940f
+  top_scheme_ids:
+  - kotak_savings_direct_growth
+  - kotak_savings_direct_growth
+  - kotak_savings_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_savings_direct_growth
   facet: exit_load
-  top_kind: overview_row
-  top_chunk_id: 15541b89dadce46dcc534a09
   tier0_present: true
+  tier0_value: 0%
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 15541b89dadce46dcc534a09
+  - e92a0847637db7ba8475ac6b
+  - ddb6426f172c4998f039940f
+  top_scheme_ids:
+  - kotak_savings_direct_growth
+  - kotak_savings_direct_growth
+  - kotak_savings_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_savings_direct_growth
   facet: expense_ratio
-  top_kind: overview_row
-  top_chunk_id: ddb6426f172c4998f039940f
   tier0_present: true
+  tier0_value: 0.37%
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - ddb6426f172c4998f039940f
+  - 15541b89dadce46dcc534a09
+  - e92a0847637db7ba8475ac6b
+  top_scheme_ids:
+  - kotak_savings_direct_growth
+  - kotak_savings_direct_growth
+  - kotak_savings_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_savings_direct_growth
   facet: min_sip
-  top_kind: overview_row
-  top_chunk_id: ce3e76208e6de355c335474d
   tier0_present: true
+  tier0_value: ₹100
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - ce3e76208e6de355c335474d
+  - ddb6426f172c4998f039940f
+  - 15541b89dadce46dcc534a09
+  top_scheme_ids:
+  - kotak_savings_direct_growth
+  - kotak_savings_direct_growth
+  - kotak_savings_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_savings_direct_growth
   facet: riskometer
-  top_kind: riskometer
-  top_chunk_id: f0a410d0b5e77f1e5c86b208
   tier0_present: true
+  tier0_value: Moderate Risk
+  tier2_hit: true
+  top_kinds:
+  - riskometer
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - f0a410d0b5e77f1e5c86b208
+  - 9143db531b279e7e2d6eff63
+  - 15541b89dadce46dcc534a09
+  top_scheme_ids:
+  - kotak_savings_direct_growth
+  - kotak_savings_direct_growth
+  - kotak_savings_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_gold_growth_direct
   facet: benchmark
-  top_kind: overview_row
-  top_chunk_id: 4ad23e8c26292a78ef36aef5
   tier0_present: true
+  tier0_value: Domestic Price of Physical Gold TR INR
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 4ad23e8c26292a78ef36aef5
+  - 66faa2910edbc864494d03b6
+  - 93ed02a75e45c3880c108886
+  top_scheme_ids:
+  - kotak_gold_growth_direct
+  - kotak_gold_growth_direct
+  - kotak_gold_growth_direct
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_gold_growth_direct
   facet: exit_load
-  top_kind: overview_row
-  top_chunk_id: 66faa2910edbc864494d03b6
   tier0_present: true
+  tier0_value: 1.0% — Exit Load of 1% if redeemed in 0-15 Days
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 66faa2910edbc864494d03b6
+  - 93ed02a75e45c3880c108886
+  - 6d3209f754c5c5b3f9dc9412
+  top_scheme_ids:
+  - kotak_gold_growth_direct
+  - kotak_gold_growth_direct
+  - kotak_gold_growth_direct
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_gold_growth_direct
   facet: expense_ratio
-  top_kind: overview_row
-  top_chunk_id: 6d3209f754c5c5b3f9dc9412
   tier0_present: true
+  tier0_value: 0.66%
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 6d3209f754c5c5b3f9dc9412
+  - c98a19c9ea7efcd105fe684f
+  - 93ed02a75e45c3880c108886
+  top_scheme_ids:
+  - kotak_gold_growth_direct
+  - kotak_gold_growth_direct
+  - kotak_gold_growth_direct
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_gold_growth_direct
   facet: min_sip
-  top_kind: overview_row
-  top_chunk_id: c98a19c9ea7efcd105fe684f
   tier0_present: true
+  tier0_value: ₹100
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - c98a19c9ea7efcd105fe684f
+  - 66faa2910edbc864494d03b6
+  - 6d3209f754c5c5b3f9dc9412
+  top_scheme_ids:
+  - kotak_gold_growth_direct
+  - kotak_gold_growth_direct
+  - kotak_gold_growth_direct
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_gold_growth_direct
   facet: riskometer
-  top_kind: riskometer
-  top_chunk_id: 4d593dceff0bd24885dfe654
   tier0_present: true
+  tier0_value: High Risk
+  tier2_hit: true
+  top_kinds:
+  - riskometer
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 4d593dceff0bd24885dfe654
+  - 4ad23e8c26292a78ef36aef5
+  - 93ed02a75e45c3880c108886
+  top_scheme_ids:
+  - kotak_gold_growth_direct
+  - kotak_gold_growth_direct
+  - kotak_gold_growth_direct
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_flexicap_direct_growth
   facet: benchmark
-  top_kind: overview_row
-  top_chunk_id: 756a848e35d06be50cb879ac
   tier0_present: true
+  tier0_value: Nifty 500 TR INR
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 756a848e35d06be50cb879ac
+  - 72eceb2cc4baaf61a46f1698
+  - 705854593c02a1d668be07e5
+  top_scheme_ids:
+  - kotak_flexicap_direct_growth
+  - kotak_flexicap_direct_growth
+  - kotak_flexicap_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_flexicap_direct_growth
   facet: exit_load
-  top_kind: overview_row
-  top_chunk_id: 72eceb2cc4baaf61a46f1698
   tier0_present: true
+  tier0_value: 1.0% — Exit Load of 1% if redeemed in 0-1 Years
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 72eceb2cc4baaf61a46f1698
+  - 705854593c02a1d668be07e5
+  - 35ee8e16c899719ad54af08b
+  top_scheme_ids:
+  - kotak_flexicap_direct_growth
+  - kotak_flexicap_direct_growth
+  - kotak_flexicap_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_flexicap_direct_growth
   facet: expense_ratio
-  top_kind: overview_row
-  top_chunk_id: 35ee8e16c899719ad54af08b
   tier0_present: true
+  tier0_value: 0.61%
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 35ee8e16c899719ad54af08b
+  - 72eceb2cc4baaf61a46f1698
+  - b8812a3f19d3880e2114e424
+  top_scheme_ids:
+  - kotak_flexicap_direct_growth
+  - kotak_flexicap_direct_growth
+  - kotak_flexicap_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_flexicap_direct_growth
   facet: min_sip
-  top_kind: overview_row
-  top_chunk_id: b8812a3f19d3880e2114e424
   tier0_present: true
+  tier0_value: ₹100
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - b8812a3f19d3880e2114e424
+  - 72eceb2cc4baaf61a46f1698
+  - 35ee8e16c899719ad54af08b
+  top_scheme_ids:
+  - kotak_flexicap_direct_growth
+  - kotak_flexicap_direct_growth
+  - kotak_flexicap_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_flexicap_direct_growth
   facet: riskometer
-  top_kind: riskometer
-  top_chunk_id: deb374a062767a560079fa6b
   tier0_present: true
+  tier0_value: Very High Risk
+  tier2_hit: true
+  top_kinds:
+  - riskometer
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - deb374a062767a560079fa6b
+  - 756a848e35d06be50cb879ac
+  - 705854593c02a1d668be07e5
+  top_scheme_ids:
+  - kotak_flexicap_direct_growth
+  - kotak_flexicap_direct_growth
+  - kotak_flexicap_direct_growth
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_liquid_growth_direct
   facet: benchmark
-  top_kind: overview_row
-  top_chunk_id: 0a73b368ba9477a383d6b428
   tier0_present: true
+  tier0_value: Nifty Liquid Index TR INR
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 0a73b368ba9477a383d6b428
+  - 680e81dfb9c6bcd03a3a6eff
+  - 284810ca3f507bef9bfd7265
+  top_scheme_ids:
+  - kotak_liquid_growth_direct
+  - kotak_liquid_growth_direct
+  - kotak_liquid_growth_direct
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_liquid_growth_direct
   facet: exit_load
-  top_kind: overview_row
-  top_chunk_id: 284810ca3f507bef9bfd7265
   tier0_present: true
+  tier0_value: 0.0% — Exit Load of 0.007% if redeemed in 0-1 Days, 0.0065% if redeemed
+    in 1-2 Days, 0.006% if redeemed in 2-3 Days, 0.0055% if redeemed in 3-4 Days,
+    0.005% if redeemed in 4-5 Days, 0.0045% if redeemed in 5-6 Days
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 284810ca3f507bef9bfd7265
+  - bec68de6636b40d99668005f
+  - 680e81dfb9c6bcd03a3a6eff
+  top_scheme_ids:
+  - kotak_liquid_growth_direct
+  - kotak_liquid_growth_direct
+  - kotak_liquid_growth_direct
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_liquid_growth_direct
   facet: expense_ratio
-  top_kind: overview_row
-  top_chunk_id: 680e81dfb9c6bcd03a3a6eff
   tier0_present: true
+  tier0_value: 0.19%
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 680e81dfb9c6bcd03a3a6eff
+  - 284810ca3f507bef9bfd7265
+  - bec68de6636b40d99668005f
+  top_scheme_ids:
+  - kotak_liquid_growth_direct
+  - kotak_liquid_growth_direct
+  - kotak_liquid_growth_direct
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_liquid_growth_direct
   facet: min_sip
-  top_kind: overview_row
-  top_chunk_id: ae3150f5cb122e4fc0dca44d
   tier0_present: true
+  tier0_value: --
+  tier2_hit: true
+  top_kinds:
+  - overview_row
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - ae3150f5cb122e4fc0dca44d
+  - 284810ca3f507bef9bfd7265
+  - 680e81dfb9c6bcd03a3a6eff
+  top_scheme_ids:
+  - kotak_liquid_growth_direct
+  - kotak_liquid_growth_direct
+  - kotak_liquid_growth_direct
+  cross_scheme_leak: false
   status: pass
 - scheme_id: kotak_liquid_growth_direct
   facet: riskometer
-  top_kind: riskometer
-  top_chunk_id: 50f03cbe4e1044b274cad2f2
   tier0_present: true
+  tier0_value: Moderate Risk
+  tier2_hit: true
+  top_kinds:
+  - riskometer
+  - overview_row
+  - overview_row
+  top_chunk_ids:
+  - 50f03cbe4e1044b274cad2f2
+  - 0a73b368ba9477a383d6b428
+  - bec68de6636b40d99668005f
+  top_scheme_ids:
+  - kotak_liquid_growth_direct
+  - kotak_liquid_growth_direct
+  - kotak_liquid_growth_direct
+  cross_scheme_leak: false
   status: pass

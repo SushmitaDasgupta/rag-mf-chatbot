@@ -24,7 +24,7 @@ if (!/^https?:\/\//i.test(apiUrl)) {
   process.exit(1);
 }
 
-// Relative /api paths in the UI bundle (proxied by api/[[...path]].ts on Vercel).
+// Relative /api paths in the UI bundle (proxied by api/[...path].ts on Vercel).
 const prodEnvPath = path.join(repoRoot, "ui", ".env.production.local");
 fs.writeFileSync(prodEnvPath, "VITE_API_BASE_URL=\n");
 

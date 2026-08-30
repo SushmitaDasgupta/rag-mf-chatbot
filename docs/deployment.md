@@ -184,7 +184,7 @@ Copy from [`vercel.env.example`](../vercel.env.example) into **Vercel → Settin
 
 (`VITE_API_BASE_URL` also works for the build script, but prefer `RAILWAY_API_URL` so the UI uses same-origin `/api` via Vercel proxy instead of calling Railway directly from the browser.)
 
-The build script [`scripts/prepare_vercel_build.mjs`](../scripts/prepare_vercel_build.mjs) validates this URL. At runtime, [`api/[[...path]].ts`](../api/[[...path]].ts) proxies `/api/*` on Vercel to Railway so the browser never calls Railway directly (no CORS issues).
+The build script [`scripts/prepare_vercel_build.mjs`](../scripts/prepare_vercel_build.mjs) validates this URL. At runtime, [`api/[...path].ts`](../api/[...path].ts) proxies `/api/*` on Vercel to Railway so the browser never calls Railway directly (no CORS issues).
 
 > **Important:** `VITE_*` vars are read at **build time** on Vercel. After changing them, click **Redeploy**. A missing URL fails the build with a clear error instead of shipping a broken UI.
 
@@ -321,7 +321,7 @@ Phase 2 (Vercel) files:
 | File | Platform | Purpose |
 | --- | --- | --- |
 | `vercel.json` | Vercel | Root deploy — builds `ui/`, disables FastAPI auto-detect |
-| `api/[[...path]].ts` | Vercel | Edge proxy `/api/*` → Railway at runtime |
+| `api/[...path].ts` | Vercel | Edge proxy `/api/*` → Railway at runtime |
 | `ui/vercel.json` | Vercel | Use when Root Directory is set to `ui/` |
 | `ui/.env.example` | Local / Vercel | `VITE_API_BASE_URL` template for `ui/` |
 | `vercel.env.example` | Vercel | Variable template for dashboard |

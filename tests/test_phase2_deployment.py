@@ -27,7 +27,7 @@ def test_phase2_prepare_vercel_build_script() -> None:
 
 
 def test_phase2_api_proxy_function() -> None:
-    path = REPO_ROOT / "api" / "[[...path]].ts"
+    path = REPO_ROOT / "api" / "[...path].ts"
     text = path.read_text(encoding="utf-8")
     assert "RAILWAY_API_URL" in text
     assert 'runtime: "edge"' in text

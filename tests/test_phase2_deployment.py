@@ -22,9 +22,15 @@ def test_phase2_root_vercel_json_builds_ui() -> None:
 def test_phase2_prepare_vercel_build_script() -> None:
     path = REPO_ROOT / "scripts" / "prepare_vercel_build.mjs"
     text = path.read_text(encoding="utf-8")
-    assert "VITE_API_BASE_URL" in text
     assert "RAILWAY_API_URL" in text
-    assert "/api/:path*" in text
+    assert "VITE_API_BASE_URL" in text
+
+
+def test_phase2_api_proxy_function() -> None:
+    path = REPO_ROOT / "api" / "[[...path]].ts"
+    text = path.read_text(encoding="utf-8")
+    assert "RAILWAY_API_URL" in text
+    assert 'runtime: "edge"' in text
 
 
 def test_phase2_vercel_json() -> None:
